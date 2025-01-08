@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.starkindustries.radientdermat.Frontend.Navigation.Navigation
+import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
 import com.starkindustries.radientdermat.ui.theme.RadientDermatTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +23,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RadientDermatTheme {
-                SplashScreen()
+                Application()
             }
         }
     }
@@ -29,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Application(){
-
+    var navController = rememberNavController()
+    Navigation()
 }
 

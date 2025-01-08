@@ -17,12 +17,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(navController: NavController) {
+
     var startAnimation by remember { mutableStateOf(false) }
     var showSlogan by remember { mutableStateOf(false) }
 
@@ -32,6 +36,8 @@ fun SplashScreen() {
         startAnimation = true
         delay(1000)  // Wait for slide out animation to complete
         showSlogan = true
+        delay(1000)
+        navController.navigate(Routes.LOGIN_SCREEN_ROUTE.route)
     }
 
     val radientOffset by animateFloatAsState(
@@ -118,5 +124,5 @@ fun SplashScreen() {
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun SplashScreenPreview(){
-    SplashScreen()
+    SplashScreen(rememberNavController())
 }

@@ -16,3 +16,5 @@ val purpleGradient = Brush.verticalGradient(
         Color(0xFF3949AB)
     )
 )
+
+val BlueBackground = Color(0xFF23A6F7)
