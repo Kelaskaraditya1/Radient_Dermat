@@ -1,3 +1,4 @@
+import android.content.Context
 import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -11,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,7 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
+import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.PatientDashboardScreen
+import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.SignUpScreen
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
 import kotlinx.coroutines.delay
@@ -30,6 +37,10 @@ fun SplashScreen(navController: NavController) {
     var startAnimation by remember { mutableStateOf(false) }
     var showSlogan by remember { mutableStateOf(false) }
 
+    var context = LocalContext.current.applicationContext
+    var sharedPreferences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME,Context.MODE_PRIVATE)
+    var editor = sharedPreferences.edit()
+
     // Start animation with coroutine delay
     LaunchedEffect(Unit) {
         delay(500)  // Delay before the text starts sliding
@@ -37,7 +48,10 @@ fun SplashScreen(navController: NavController) {
         delay(1000)  // Wait for slide out animation to complete
         showSlogan = true
         delay(1000)
-        navController.navigate(Routes.LOGIN_SCREEN_ROUTE.route)
+        if(sharedPreferences.getBoolean(Keys.LOGIN_STATUS,false))
+            navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route)
+        else
+            navController.navigate(Routes.LOGIN_SCREEN_ROUTE.route)
     }
 
     val radientOffset by animateFloatAsState(
@@ -48,7 +62,6 @@ fun SplashScreen(navController: NavController) {
         targetValue = if (startAnimation) 500f else 0f,  // Move to right
         animationSpec = tween(durationMillis = 1500, easing = LinearEasing), label = ""
     )
-
 
     Box(
         modifier = Modifier

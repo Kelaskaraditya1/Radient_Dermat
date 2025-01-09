@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.PatientDashboardScreen
+import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.SignUpScreen
 
 @Composable
 fun Navigation(){
@@ -21,6 +23,14 @@ fun Navigation(){
         
         composable(Routes.LOGIN_SCREEN_ROUTE.route){
             LoginScreen(navController = navController)
+        }
+
+        composable(Routes.SIGNUP_SCREEN_ROUTE.route){
+            SignUpScreen(navController)
+        }
+
+        composable(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+            PatientDashboardScreen(navController)
         }
 
     }

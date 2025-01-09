@@ -1,5 +1,8 @@
 package com.starkindustries.radientdermat.Frontend.Screens.LoginScreen
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.view.Display.Mode
 import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -67,18 +70,20 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
+import com.starkindustries.radientdermat.Frontend.Screens.Compose.AuthenticationLogoTextCompose
+import com.starkindustries.radientdermat.Frontend.Screens.Compose.SwitchScreenCompose
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
 
-
-
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController){
 
@@ -93,26 +98,22 @@ fun LoginScreen(navController: NavController){
         mutableStateOf(false)
     }
 
+    var context = LocalContext.current.applicationContext
+
+    var sharedPrefrences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME,Context.MODE_PRIVATE)
+    var editor = sharedPrefrences.edit()
+
 
     Column(horizontalAlignment = Alignment.CenterHorizontally
         , verticalArrangement = Arrangement.Center
     , modifier = Modifier
             .fillMaxSize()) {
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            , contentAlignment = Alignment.Center) {
-            Image(painter = painterResource(id = R.drawable.login_logo)
-                , contentDescription = ""
-                , modifier = Modifier
-                    .size(130.dp)
-                    .fillMaxWidth()
-            )
-        }
 
-        Text(text = "Login"
-        , fontSize = 35.sp
-        , fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier
+            .height(40.dp))
+
+        AuthenticationLogoTextCompose(logo = painterResource(id = R.drawable.login_logo), text = "Login")
 
         Spacer(modifier = Modifier
             .height(10.dp))
@@ -120,7 +121,6 @@ fun LoginScreen(navController: NavController){
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
         ) {
             Canvas(
                 modifier = Modifier
@@ -172,7 +172,16 @@ fun LoginScreen(navController: NavController){
                     , color = Color.Black
                     )
                 }
-                    , textStyle = TextStyle(fontSize = 18.sp))
+                    , textStyle = TextStyle(fontSize = 18.sp)
+                , modifier = Modifier
+                        .fillMaxWidth()
+                    , colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White
+                        , focusedTextColor = Color.Black
+                        , unfocusedIndicatorColor = Color.Transparent
+                        , focusedIndicatorColor = Color.Transparent
+                        ,unfocusedTextColor = Color.Black
+                    ))
 
                 Spacer(modifier = Modifier
                     .height(15.dp))
@@ -199,9 +208,19 @@ fun LoginScreen(navController: NavController){
                         }
                     }
                     , textStyle = TextStyle(fontSize = 18.sp)
-                )
+                , modifier = Modifier
+                        .fillMaxWidth(  )
+                    , colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White
+                        , unfocusedIndicatorColor = Color.Transparent
+                        , focusedIndicatorColor = Color.Transparent
+                        ,unfocusedTextColor = Color.Black
+                        , focusedTextColor = Color.Black
+                    ))
 
-                Button(onClick = { }
+                Button(onClick = {
+
+                }
                 , modifier = Modifier
                         .padding(top = 10.dp)
                 , colors = ButtonDefaults.buttonColors(
@@ -216,10 +235,17 @@ fun LoginScreen(navController: NavController){
                     , textDecoration = TextDecoration.Underline)
                 }
 
+                Spacer(modifier = Modifier
+                    .height(20.dp))
+
                 Box(modifier = Modifier
                     .fillMaxWidth()
                 , contentAlignment = Alignment.Center) {
                     Button(onClick = {
+                        editor.putBoolean(Keys.LOGIN_STATUS,true)
+                        editor.commit()
+                        editor.apply()
+                        navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route)
 
                     }
                         , shape = CircleShape
@@ -234,7 +260,7 @@ fun LoginScreen(navController: NavController){
                 }
 
                 Spacer(modifier = Modifier
-                    .height(20.dp))
+                    .height(30.dp))
 
 
                 Row(horizontalArrangement = Arrangement.SpaceEvenly
@@ -267,7 +293,7 @@ fun LoginScreen(navController: NavController){
                 }
 
                 Spacer(modifier = Modifier
-                    .height(20.dp))
+                    .height(30.dp))
 
                 Row(horizontalArrangement = Arrangement.Center
                 , modifier = Modifier
@@ -291,25 +317,7 @@ fun LoginScreen(navController: NavController){
                 Spacer(modifier = Modifier
                     .height(50.dp))
 
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                , horizontalArrangement = Arrangement.Center
-                , verticalAlignment = Alignment.CenterVertically) {
-
-                    Text(text = "Don't have an account,"
-                    , fontSize = 18.sp
-                    , fontWeight = FontWeight.W500
-                    , color = Color.White)
-                    Text(text = " Signup"
-                        , fontSize = 18.sp
-                        , fontWeight = FontWeight.W500
-                        , color = BlueBackground
-                    , textDecoration = TextDecoration.Underline
-                    , modifier = Modifier
-                            .clickable {
-                                navController.navigate(Routes.SIGNUP_SCREEN_ROUTE.route)
-                            })
-                }
+                SwitchScreenCompose(text1 = "Don't have an account,", text2 = "signup", navController = navController, route = Routes.SIGNUP_SCREEN_ROUTE.route)
 
 
             }

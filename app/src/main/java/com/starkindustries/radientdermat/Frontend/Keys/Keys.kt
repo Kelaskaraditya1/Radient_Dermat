@@ -5,5 +5,12 @@ class Keys {
         const val SPLASH_SCREEN_ROUTE="SPLASH_SCREEN"
         const val LOGIN_SCREEN_ROUTE="LOGIN_SCREEN"
         const val SIGNUP_SCREEN_ROUTE="SIGNUP_SCREEN"
+        const val SHARED_PREFERENCES_NAME="LOGIN_SIGNUP_PREFERENCES"
+        const val LOGIN_STATUS="LOGIN_STATUS"
+        const val NAME="NAME"
+        const val EMAIL="EMAIL"
+        const val USERNAME="USERNAME"
+        const val PASSWORD="PASSWORD"
+        const val PATIENT_DASHBOARD_SCREEN_ROUTE="PATIENT_DASHBOARD_SCREEN"
     }
 }

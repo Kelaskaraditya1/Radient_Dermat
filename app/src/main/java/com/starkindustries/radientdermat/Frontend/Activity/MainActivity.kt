@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Application(){
-    var navController = rememberNavController()
     Navigation()
 }
 
