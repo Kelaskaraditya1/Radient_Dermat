@@ -25,7 +25,6 @@ import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
-import com.starkindustries.radientdermat.Frontend.Screens.Patient.PatientDashboardScreen
 import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.SignUpScreen
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
@@ -49,9 +48,13 @@ fun SplashScreen(navController: NavController) {
         showSlogan = true
         delay(1000)
         if(sharedPreferences.getBoolean(Keys.LOGIN_STATUS,false))
-            navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route)
+            navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+                popUpTo(0)
+            }
         else
-            navController.navigate(Routes.LOGIN_SCREEN_ROUTE.route)
+            navController.navigate(Routes.LOGIN_SCREEN_ROUTE.route){
+                popUpTo(0)
+            }
     }
 
     val radientOffset by animateFloatAsState(

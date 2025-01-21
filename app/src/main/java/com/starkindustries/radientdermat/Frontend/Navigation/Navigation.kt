@@ -9,7 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
-import com.starkindustries.radientdermat.Frontend.Screens.Patient.PatientDashboardScreen
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.CaptureFragment
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.HomeFragment
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.ProfileFragment
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.PatiendDashboardScreen
 import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.SignUpScreen
 
 @Composable
@@ -30,9 +33,18 @@ fun Navigation(){
         }
 
         composable(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
-            PatientDashboardScreen(navController)
+            PatiendDashboardScreen(navController)
         }
+        composable(Routes.HOME_FRAGMENT_ROUTE.route){
+            HomeFragment()
+        }
+        composable(Routes.CAPTURE_FRAGMENT_ROUTE.route){
+            CaptureFragment()
+        }
+        composable(Routes.PROFILE_FRAGMENT_ROUTE.route){
+            ProfileFragment()
 
+        }
     }
 
 }

@@ -12,5 +12,10 @@ class Keys {
         const val USERNAME="USERNAME"
         const val PASSWORD="PASSWORD"
         const val PATIENT_DASHBOARD_SCREEN_ROUTE="PATIENT_DASHBOARD_SCREEN"
+        const val HOME_FRAGMENT="HOME_FRAGMENT"
+        const val CAPTURE_FRAGMENT="CAPTURE_FRAGMENT"
+        const val PROFILE_FRAGMENT="PROFILE_FRAGMENT"
+
+
     }
 }
