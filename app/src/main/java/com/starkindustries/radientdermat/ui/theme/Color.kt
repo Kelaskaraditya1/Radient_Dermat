@@ -18,3 +18,46 @@ val purpleGradient = Brush.verticalGradient(
 )
 
 val BlueBackground = Color(0xFF23A6F7)
+val DarkBlue = Color(0xFF06154E)
+
+val cardBlueBackground = Color(0xFF604DED)
+
+val multiShadeYellowGradient = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFFFFF9C4), // Very Light Yellow
+        Color(0xFFFFF176), // Light Yellow
+        Color(0xFFFFEE58), // Medium Yellow
+        Color(0xFFFFD600), // Bright Yellow
+        Color(0xFFFFAB00)  // Deep Yellow
+    )
+)
+
+
+val orangeGradient = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFFFF8A65), // Light Orange
+        Color(0xFFFF5722)  // Bright Orange
+    )
+)
+
+val brightGreenGradient = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFF00E676), // Bright Light Green
+        Color(0xFF00C853)  // Vibrant Green
+    )
+)
+
+val multiShadeOrangeGradient = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFFBF360C), // Dark Orange (Top)
+        Color(0xFFFF7043), // Medium-Dark Orange
+        Color(0xFFFF8A65), // Medium Orange
+        Color(0xFFFFAB91), // Light Orange
+        Color(0xFFD84315)  // Dark Orange (Bottom)
+    )
+)
+
+val brightGreen = Color(0xFF43A047)  // Vibrant Bright Green
+
+
+

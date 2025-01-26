@@ -1,15 +1,26 @@
 package com.starkindustries.radientdermat.Frontend.Screens.Compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
+import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
 
 @Composable
 fun AuthenticationLogoTextCompose(logo:Painter,text:String){
@@ -76,9 +88,14 @@ fun SwitchScreenCompose(text1:String,text2:String,navController: NavController,r
 
 
 @Composable
+fun DiseasesTab(name:String){
+
+
+}
+
+
+@Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun Preview(){
-
-    SwitchScreenCompose(text1 = "already have an account,", text2 = "Login", navController = rememberNavController() , route = Routes.LOGIN_SCREEN_ROUTE.route)
-
+    DiseasesTab("Shingles")
 }

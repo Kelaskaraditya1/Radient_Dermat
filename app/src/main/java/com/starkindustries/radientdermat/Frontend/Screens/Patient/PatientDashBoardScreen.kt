@@ -3,6 +3,8 @@ package com.starkindustries.radientdermat.Frontend.Screens.Patient
 import android.content.Context
 import android.widget.ImageButton
 import android.widget.Space
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,14 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -49,6 +54,7 @@ import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.Capt
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.HomeFragment
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.ProfileFragment
 import com.starkindustries.radientdermat.Utility.Utility
+import com.starkindustries.radientdermat.ui.theme.purpleGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +66,8 @@ fun PatiendDashboardScreen(navController: NavController) {
     val pagerState = rememberPagerState(initialPage = 0) {
         Utility.getTabItemList().size
     }
+    val activity = LocalContext.current as? ComponentActivity
+
 
     var selectedTab by remember { mutableIntStateOf(0) }
 
@@ -80,16 +88,30 @@ fun PatiendDashboardScreen(navController: NavController) {
                 title = { Text(text = "Radient Dermat") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
-                    titleContentColor = Color.Black,
+                    titleContentColor = Color.White,
                     navigationIconContentColor = Color.Black
                 ),
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
+                        activity?.finish()
+                    }
+                    , colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = Color.White
+                    )) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
+                , actions = {
+                    IconButton(onClick = { }) {
+                        Icon(imageVector = Icons.Filled.Search, contentDescription = ""
+                        , modifier = Modifier
+                                .padding(end = 10.dp)
+                                .size(30.dp)
+                        , tint = Color.White)
+                    }
+                }
+                , modifier = Modifier
+                    .background(Color(0xFF1A237E))
             )
         }
     ) { paddingValues ->
@@ -101,7 +123,8 @@ fun PatiendDashboardScreen(navController: NavController) {
             // TabRow
             TabRow(selectedTabIndex = selectedTab
             , modifier = Modifier
-                    .fillMaxWidth()) {
+                    .fillMaxWidth()
+            , containerColor = Color(0xFF1A237E)) {
                 Utility.getTabItemList().forEachIndexed { index, item ->
                     Tab(
                         selected = selectedTab == index,
@@ -112,10 +135,17 @@ fun PatiendDashboardScreen(navController: NavController) {
                             Icon(
                                 imageVector = if (selectedTab == index) item.selectedIcon else item.unSelectedIcon,
                                 contentDescription = null
-                            )
+                            , tint = if(selectedTab==index)
+                                Color.White
+                            else
+                            Color.LightGray)
                         },
                         text = {
-                            Text(text = item.title)
+                            Text(text = item.title
+                            , color = if(selectedTab==index)
+                            Color.White
+                            else
+                            Color.LightGray)
                         }
                     )
                 }
