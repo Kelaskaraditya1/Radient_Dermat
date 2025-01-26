@@ -42,7 +42,7 @@ fun Navigation(){
             CaptureFragment()
         }
         composable(Routes.PROFILE_FRAGMENT_ROUTE.route){
-            ProfileFragment()
+            ProfileFragment(navController)
 
         }
     }

@@ -161,7 +161,7 @@ fun PatiendDashboardScreen(navController: NavController) {
                 when (index) {
                     0 -> HomeFragment()
                     1 -> CaptureFragment()
-                    2 -> ProfileFragment()
+                    2 -> ProfileFragment(navController)
                 }
             }
 

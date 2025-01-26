@@ -57,7 +57,30 @@ val multiShadeOrangeGradient = Brush.verticalGradient(
     )
 )
 
-val brightGreen = Color(0xFF43A047)  // Vibrant Bright Green
+val brightGreen = Color(0xFF43A047) // Vibrant Bright Green
+
+val whiteBrush = Brush.linearGradient(
+    colors = listOf(
+        Color(0xFFFFFFFF), // Pure White
+        Color(0xFFFFFFFF)  // Pure White (gradients with same color)
+    )
+)
+
+val redGradientBrush = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFFB71C1C), // Dark Red (Top)
+        Color(0xFFD32F2F), // Medium Red
+        Color(0xFFFF5252), // Light Red
+        Color(0xFFFF1744)  // Bright Red (Bottom)
+    )
+)
+val blueGradientBrush = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFF0D47A1), // Dark Blue (Top)
+        Color(0xFF1976D2), // Medium Blue
+        Color(0xFF42A5F5)  // Light Blue (Bottom)
+    )
+)
 
 
 
