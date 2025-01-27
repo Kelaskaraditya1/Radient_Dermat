@@ -27,10 +27,12 @@ import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.outlined.BrowseGallery
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.PhotoCameraBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,10 +46,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseasesTab
+import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseaseTabCompose
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
 import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
@@ -65,6 +68,10 @@ fun HomeFragment(){
     var scrollState = rememberScrollState()
 
     var diseasesList = Utility.getDiseasesTab()
+
+    var diseaseCardState by remember {
+        mutableStateOf(false)
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -111,6 +118,7 @@ fun HomeFragment(){
                         .width(150.dp)
                         .clickable {
                             selectedTab = disease.index
+                            diseaseCardState = true
                         }
                         , colors = CardDefaults.cardColors(
                             containerColor = if(selectedTab==disease.index) cardBlueBackground else Color.Gray
@@ -226,6 +234,68 @@ fun HomeFragment(){
             }
         }
     }
+
+    if(diseaseCardState){
+
+        var disease = Utility.getDiseasesTab().get(selectedTab)
+
+        AlertDialog(onDismissRequest = {
+            diseaseCardState=false
+        }, confirmButton = {
+
+        }
+            , text = {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .size(400.dp)
+                    .verticalScroll(scrollState)) {
+                    Image(painter = disease.painter
+                        , contentDescription = ""
+                        , modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth()
+                            .height(200.dp))
+
+                    Spacer(modifier = Modifier
+                        .height(15.dp))
+
+                    Text(text = "Symtoms:"
+                        , style = MaterialTheme.typography.titleMedium
+                        , fontSize = 25.sp
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = disease.symtom
+                        , fontWeight = FontWeight.W400
+                        , fontSize = 20.sp)
+
+                    Spacer(modifier = Modifier
+                        .height(20.dp))
+
+                    Text(text = "Remedy:"
+                        , style = MaterialTheme.typography.titleMedium
+                        , fontSize = 25.sp
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = disease.remedy
+                        , fontWeight = FontWeight.W400
+                        , fontSize = 20.sp)
+                }
+            }
+            , title = {
+                Text(text = disease.name
+                    , modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                    , textAlign = TextAlign.Center
+                    , fontWeight = FontWeight.W500
+                    , style = MaterialTheme.typography.titleLarge)
+            })    }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
