@@ -1,8 +1,14 @@
 package com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments
 
+import android.net.Uri
 import android.widget.Space
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
@@ -28,20 +35,27 @@ import androidx.compose.material.icons.outlined.BrowseGallery
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.PhotoCameraBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +64,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseaseTabCompose
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
@@ -57,6 +72,8 @@ import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
 import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
 import com.starkindustries.radientdermat.ui.theme.orangeGradient
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeFragment(){
@@ -72,6 +89,22 @@ fun HomeFragment(){
     var diseaseCardState by remember {
         mutableStateOf(false)
     }
+
+    var imageUri by remember{
+        mutableStateOf<Uri?>(null)
+    }
+
+    var dialogState by remember{
+        mutableStateOf(true)
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) { uri->
+        imageUri=uri;
+    }
+
+    var coroutinesScope = rememberCoroutineScope()
+
+    var context = LocalContext.current.applicationContext
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -163,7 +196,56 @@ fun HomeFragment(){
         , color = Color.White)
 
         Spacer(modifier = Modifier
-            .height(5.dp))
+            .height(15.dp))
+
+
+        if(imageUri!=null&&dialogState){
+            AlertDialog(onDismissRequest = {
+                dialogState=true
+                imageUri=null
+            }
+                , confirmButton = {
+                    Button(onClick = {
+                        Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show()
+                        dialogState=false
+                    }) {
+                        Text(text = "Upload")
+                    }
+            }
+            , text = {
+                Column {
+                    Image(painter = rememberAsyncImagePainter(model = imageUri)
+                        , contentDescription =""
+                    , modifier = Modifier
+                            .height(200.dp)
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    , contentScale = ContentScale.Crop)
+                }
+                }
+            , title = {
+                Text(text = "Test"
+                , fontSize = 20.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                , textAlign = TextAlign.Center)
+                }
+            , dismissButton = {
+                Button(onClick = {
+                    dialogState=false
+                }
+                , colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color(0xFF6650a4)
+                )
+                , modifier = Modifier
+                        .border(width = 1.dp, color = Color(0xFF6650a4), shape = CircleShape)) {
+                    Text(text = "Cancle")
+                }
+                })
+        }
+
 
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -198,6 +280,14 @@ fun HomeFragment(){
                 .weight(1f)
                 .size(150.dp)
                 .padding(start = 5.dp)
+                .clickable {
+                    galleryLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                    if (imageUri != null)
+                        dialogState = true
+
+                }
                 , colors = CardDefaults.cardColors(
                     contentColor = Color.White
                 )) {

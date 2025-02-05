@@ -1,10 +1,14 @@
 package com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments
 
 import android.content.Context
+import android.net.Uri
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +32,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.PhotoCameraBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -36,14 +41,21 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,8 +67,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
+import com.starkindustries.radientdermat.Frontend.Screens.Compose.CircularImageProfile
+import com.starkindustries.radientdermat.Frontend.Screens.Compose.GalleryPickerCompose
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
+import com.starkindustries.radientdermat.ui.theme.Purple40
 import com.starkindustries.radientdermat.ui.theme.blueGradientBrush
 import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
 import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
@@ -69,15 +84,103 @@ import com.starkindustries.radientdermat.ui.theme.whiteBrush
 @Composable
 fun ProfileFragment(navController:NavController){
 
-    var scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
-    var context = LocalContext.current.applicationContext
+    val context = LocalContext.current.applicationContext
 
     var coRoutineScope = rememberCoroutineScope()
 
-    var sharedPrefrences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME,Context.MODE_PRIVATE)
+    val sharedPrefrences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME,Context.MODE_PRIVATE)
 
-    var editor = sharedPrefrences.edit()
+    val editor = sharedPrefrences.edit()
+
+    var editProfileDialogState by remember{
+        mutableStateOf(false)
+    }
+
+    var updatePasswordDialogState by remember{
+        mutableStateOf(false)
+    }
+    var updatedName by remember{
+        mutableStateOf("")
+    }
+
+    var updatedEmail by remember{
+        mutableStateOf("")
+    }
+
+    var profileUri by remember{
+        
+        mutableStateOf<Uri?>(null)
+    }
+
+    if(editProfileDialogState){
+        AlertDialog(onDismissRequest = {
+            editProfileDialogState=false
+        }, confirmButton = {
+            Button(onClick = {
+                editProfileDialogState=false
+                Toast.makeText(context, "Profile Updated Successfully!!", Toast.LENGTH_SHORT).show()
+            }) {
+                Text(text = "Update"
+                , fontSize = 18.sp
+                , fontWeight = FontWeight.W500)
+            }
+        }
+        , dismissButton = {
+            Button(onClick = {
+                editProfileDialogState=false
+            }
+            , colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent
+            )
+            , modifier = Modifier
+                    .border(width = 1.dp, color = Purple40, shape = CircleShape)) {
+                Text(text = "Cancle"
+                , color = Purple40)
+            }
+            }
+        , text = {
+            Column {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                , contentAlignment = Alignment.Center){
+                    GalleryPickerCompose { uri->
+                        profileUri=uri
+                    }
+                }
+
+                Spacer(modifier = Modifier
+                    .height(10.dp))
+
+                TextField(value = updatedName
+                    , onValueChange ={
+                        updatedName=it
+                    }
+                , label = {
+                    Text(text = "Name:"
+                    , fontSize = 18.sp
+                    , fontWeight = FontWeight.W500)
+                    })
+
+                Spacer(modifier = Modifier
+                    .height(15.dp))
+
+                TextField(value = updatedEmail, onValueChange = {
+                    updatedEmail=it
+                }
+                , label = {
+                    Text(text = "Email:"
+                    , fontSize = 18.sp
+                    , fontWeight = FontWeight.W500)
+                    })
+
+                Spacer(modifier = Modifier
+                    .height(10.dp))
+
+            }
+            })
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -129,12 +232,20 @@ fun ProfileFragment(navController:NavController){
 
             Column {
 
-                Image(painter = painterResource(id = R.drawable.img)
-                    , contentDescription = ""
-                    , modifier = Modifier
-                        .fillMaxWidth()
-                        .size(150.dp)
-                        .offset(y = -50.dp))
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                , contentAlignment = Alignment.Center){
+                    if(profileUri==null){
+                        Image(painter = painterResource(id = R.drawable.img)
+                            , contentDescription = ""
+                            , modifier = Modifier
+                                .size(180.dp)
+                                .offset(y = -50.dp)
+                            , contentScale = ContentScale.Crop)
+                    }else
+                        CircularImageProfile(modifier = Modifier, uri = profileUri)
+
+                }
 
 
                 Text(text = "Aditya Kelaskar"
@@ -221,6 +332,9 @@ fun ProfileFragment(navController:NavController){
                             .weight(1f)
                             .size(150.dp)
                             .padding(end = 5.dp)
+                            .clickable {
+                                editProfileDialogState = true
+                            }
                             , colors = CardDefaults.cardColors(
                                 contentColor = Color.White
                             )) {
