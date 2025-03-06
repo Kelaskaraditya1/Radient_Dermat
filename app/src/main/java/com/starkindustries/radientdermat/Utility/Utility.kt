@@ -3,9 +3,11 @@ package com.starkindustries.radientdermat.Utility
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Camera
+import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
@@ -22,7 +24,7 @@ class Utility{
 
             var list = listOf(
                 TabItem(title = "Home", selectedIcon = Icons.Filled.Home, unSelectedIcon = Icons.Outlined.Home)
-                , TabItem(title = "Capture", selectedIcon = Icons.Filled.Camera, unSelectedIcon = Icons.Outlined.Camera)
+                , TabItem(title = "History", selectedIcon = Icons.Filled.DocumentScanner, unSelectedIcon = Icons.Outlined.DocumentScanner)
                 , TabItem(title = "Profile", selectedIcon = Icons.Filled.Person, unSelectedIcon = Icons.Outlined.Person)
             )
             return list

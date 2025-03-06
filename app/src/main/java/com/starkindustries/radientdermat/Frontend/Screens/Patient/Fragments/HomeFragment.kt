@@ -53,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -134,10 +135,20 @@ fun HomeFragment(){
                     , color = Color.White
                 , fontWeight = FontWeight.W500)
             }
-            Image(painter = painterResource(id = R.drawable.img)
-                , contentDescription =""
-            , modifier = Modifier
-                    .size(100.dp))
+            if(imageUri!=null){
+                Image(painter = painterResource(id = R.drawable.img)
+                    , contentDescription =""
+                    , modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape))
+            }else{
+                Image(painter = painterResource(id = R.drawable.profile)
+                    , contentDescription =""
+                , modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape))
+            }
+
         }
         Spacer(modifier = Modifier
             .height(50.dp))
