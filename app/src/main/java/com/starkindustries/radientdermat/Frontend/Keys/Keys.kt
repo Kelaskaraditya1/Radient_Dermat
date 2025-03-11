@@ -15,6 +15,7 @@ class Keys {
         const val HOME_FRAGMENT="HOME_FRAGMENT"
         const val CAPTURE_FRAGMENT="CAPTURE_FRAGMENT"
         const val PROFILE_FRAGMENT="PROFILE_FRAGMENT"
+        const val NO_INTERNET_SCREEN="NO_INTERNET_SCREEN"
 
 
     }

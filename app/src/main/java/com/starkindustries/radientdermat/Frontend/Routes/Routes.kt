@@ -11,5 +11,6 @@ sealed class Routes(var route:String) {
     object HOME_FRAGMENT_ROUTE : Routes(Keys.HOME_FRAGMENT)
     object CAPTURE_FRAGMENT_ROUTE : Routes(Keys.CAPTURE_FRAGMENT)
     object PROFILE_FRAGMENT_ROUTE : Routes(Keys.PROFILE_FRAGMENT)
+    object NO_INTERNET_SCREEN_ROUTE : Routes(Keys.NO_INTERNET_SCREEN)
 
 }

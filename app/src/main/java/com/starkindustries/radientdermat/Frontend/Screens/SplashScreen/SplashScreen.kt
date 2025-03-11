@@ -1,4 +1,6 @@
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,21 +42,34 @@ fun SplashScreen(navController: NavController) {
     var sharedPreferences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME,Context.MODE_PRIVATE)
     var editor = sharedPreferences.edit()
 
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    val isConnected = rememberUpdatedState(newValue = isInternetAvailable(connectivityManager))
+
     // Start animation with coroutine delay
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isConnected.value) {
         delay(500)  // Delay before the text starts sliding
         startAnimation = true
         delay(1000)  // Wait for slide out animation to complete
         showSlogan = true
         delay(1000)
-        if(sharedPreferences.getBoolean(Keys.LOGIN_STATUS,false))
-            navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+
+        if(isConnected.value){
+            if(sharedPreferences.getBoolean(Keys.LOGIN_STATUS,false))
+                navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+                    popUpTo(0)
+                }
+            else
+                navController.navigate(Routes.LOGIN_SCREEN_ROUTE.route){
+                    popUpTo(0)
+                }
+        }else{
+            navController.navigate(Routes.NO_INTERNET_SCREEN_ROUTE.route){
                 popUpTo(0)
             }
-        else
-            navController.navigate(Routes.LOGIN_SCREEN_ROUTE.route){
-                popUpTo(0)
-            }
+        }
+
     }
 
     val radientOffset by animateFloatAsState(
@@ -135,6 +150,12 @@ fun SplashScreen(navController: NavController) {
             }
         }
     }
+}
+
+fun isInternetAvailable(connectivityManager: ConnectivityManager): Boolean {
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
 
 @Composable

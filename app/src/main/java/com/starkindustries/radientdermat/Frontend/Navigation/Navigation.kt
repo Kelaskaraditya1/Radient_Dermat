@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
+import com.starkindustries.radientdermat.Frontend.Screens.Compose.NoInternetScreen
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.CaptureFragment
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.HomeFragment
@@ -44,6 +45,9 @@ fun Navigation(){
         composable(Routes.PROFILE_FRAGMENT_ROUTE.route){
             ProfileFragment(navController)
 
+        }
+        composable(Routes.NO_INTERNET_SCREEN_ROUTE.route){
+            NoInternetScreen(navController)
         }
     }
 

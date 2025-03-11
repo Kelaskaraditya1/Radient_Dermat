@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.starkindustries.radientdermat.Application.Application
 import com.starkindustries.radientdermat.Frontend.Navigation.Navigation
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
 import com.starkindustries.radientdermat.ui.theme.RadientDermatTheme
@@ -29,9 +30,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-@Composable
-fun Application(){
-    Navigation()
-}
 
