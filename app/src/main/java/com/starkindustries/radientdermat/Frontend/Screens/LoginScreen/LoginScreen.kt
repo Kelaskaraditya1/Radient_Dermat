@@ -276,6 +276,7 @@ fun LoginScreen(navController: NavController){
                                         navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
                                             popUpTo(0){
                                                 inclusive=true
+
                                             }
                                         }
                                     }
