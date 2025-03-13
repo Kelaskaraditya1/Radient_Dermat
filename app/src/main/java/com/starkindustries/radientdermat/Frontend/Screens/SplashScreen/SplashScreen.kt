@@ -1,6 +1,7 @@
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.starkindustries.radientdermat.Backend.Instance.AuthApiInstance
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
@@ -46,6 +48,9 @@ fun SplashScreen(navController: NavController) {
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     val isConnected = rememberUpdatedState(newValue = isInternetAvailable(connectivityManager))
+
+
+
 
     // Start animation with coroutine delay
     LaunchedEffect(isConnected.value) {

@@ -11,11 +11,14 @@ class Keys {
         const val EMAIL="EMAIL"
         const val USERNAME="USERNAME"
         const val PASSWORD="PASSWORD"
+        const val PROFILE_PIC_URL="PROFILE_PIC_URL"
         const val PATIENT_DASHBOARD_SCREEN_ROUTE="PATIENT_DASHBOARD_SCREEN"
         const val HOME_FRAGMENT="HOME_FRAGMENT"
         const val CAPTURE_FRAGMENT="CAPTURE_FRAGMENT"
         const val PROFILE_FRAGMENT="PROFILE_FRAGMENT"
         const val NO_INTERNET_SCREEN="NO_INTERNET_SCREEN"
+        const val BASE_URL="http://192.168.0.103:8080/"
+        const val JWT_TOKEN="JWT_TOKEN"
 
 
     }

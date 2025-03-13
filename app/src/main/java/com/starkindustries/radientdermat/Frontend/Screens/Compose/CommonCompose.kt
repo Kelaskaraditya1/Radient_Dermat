@@ -73,8 +73,8 @@ import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
 
 @Composable
-fun AuthenticationLogoTextCompose(logo:Painter,text:String){
-    Column() {
+fun AuthenticationLogoTextCompose(logo:Painter,text:String,modifier: Modifier){
+    Column(modifier=modifier) {
         Box(modifier = Modifier
             .fillMaxWidth()
             , contentAlignment = Alignment.Center) {
@@ -317,7 +317,7 @@ fun isInternetAvailable(connectivityManager: ConnectivityManager): Boolean {
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun Preview(){
+    GalleryPickerCompose {
 
-    NoInternetScreen(rememberNavController())
-
+    }
 }

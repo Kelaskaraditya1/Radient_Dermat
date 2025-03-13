@@ -2,6 +2,9 @@ package com.starkindustries.radientdermat.Frontend.Screens.LoginScreen
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.Display.Mode
 import android.widget.Space
 import androidx.compose.foundation.Image
@@ -63,6 +66,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -77,11 +82,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.starkindustries.radientdermat.Backend.Instance.AuthApiInstance
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.AuthenticationLogoTextCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.SwitchScreenCompose
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.LoginRequest
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,6 +115,9 @@ fun LoginScreen(navController: NavController){
     var editor = sharedPrefrences.edit()
 
 
+    val coroutineScope = rememberCoroutineScope()
+
+
     Column(horizontalAlignment = Alignment.CenterHorizontally
         , verticalArrangement = Arrangement.Center
     , modifier = Modifier
@@ -113,7 +127,8 @@ fun LoginScreen(navController: NavController){
         Spacer(modifier = Modifier
             .height(40.dp))
 
-        AuthenticationLogoTextCompose(logo = painterResource(id = R.drawable.login_logo), text = "Login")
+        AuthenticationLogoTextCompose(logo = painterResource(id = R.drawable.login_logo), text = "Login"
+        , modifier = Modifier)
 
         Spacer(modifier = Modifier
             .height(10.dp))
@@ -242,10 +257,38 @@ fun LoginScreen(navController: NavController){
                     .fillMaxWidth()
                 , contentAlignment = Alignment.Center) {
                     Button(onClick = {
-                        editor.putBoolean(Keys.LOGIN_STATUS,true)
-                        editor.commit()
-                        editor.apply()
-                        navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route)
+
+                        var loginRequest = LoginRequest(
+                            username = username.toString().trim(),
+                            password= password.toString().trim()
+                        )
+
+                        try{
+                            coroutineScope.launch {
+                                var response = AuthApiInstance.api.login(loginRequest)
+                                if(response.isSuccessful){
+                                    Log.d("JWT_TOKEN",response.body().toString())
+                                    Handler(Looper.getMainLooper()).post{
+                                        editor.putString(Keys.JWT_TOKEN,response.body().toString())
+                                        editor.putBoolean(Keys.LOGIN_STATUS,true)
+                                        editor.commit()
+                                        editor.apply()
+                                        navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+                                            popUpTo(0){
+                                                inclusive=true
+                                            }
+                                        }
+                                    }
+                                }else
+                                    Log.d("API_ERROR",response.errorBody().toString())
+                            }
+                        }catch (e:Exception){
+                            Log.d("LOGIN_EXCEPTION",e.localizedMessage.toString())
+                        }
+
+
+
+
 
                     }
                         , shape = CircleShape

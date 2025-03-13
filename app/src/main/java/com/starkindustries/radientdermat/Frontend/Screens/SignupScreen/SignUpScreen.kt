@@ -1,6 +1,13 @@
 package com.starkindustries.radientdermat.Frontend.Screens.SignupScreen
 
+import android.content.ContentResolver
 import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.os.Handler
+import android.os.Looper
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Space
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -27,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,19 +47,73 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
+import com.starkindustries.radientdermat.Backend.Api.AuthApi
+import com.starkindustries.radientdermat.Backend.Instance.AuthApiInstance
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.AuthenticationLogoTextCompose
+import com.starkindustries.radientdermat.Frontend.Screens.Compose.GalleryPickerCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.SwitchScreenCompose
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.PatientsResponse
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.SignupRequest
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.HttpException
+import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 
+fun uploadProfilePicture(context: Context, imageUri: Uri, username: String, onResult: (Patient?) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val file: File = getFileFromUri(imageUri,context) ?: throw Exception("File conversion failed")
+
+            val requestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+            val multipartBody = MultipartBody.Part.createFormData("image", file.name, requestBody)
+
+            val response = AuthApiInstance.api.uploadProfilePic(username,multipartBody)
+
+            if (response.isSuccessful) {
+                Log.d("PROFILE_PIC_UPLOAD", "Upload Successful: ${response.body()}")
+                onResult(response.body()) // Pass success response
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e("PROFILE_PIC_UPLOAD", "Upload Failed: HTTP ${response.code()} - $errorBody")
+                onResult(null) // Handle failure
+            }
+        } catch (e: HttpException) {
+            Log.e("PROFILE_PIC_UPLOAD", "HttpException: ${e.message}")
+            onResult(null)
+        } catch (e: IOException) {
+            Log.e("PROFILE_PIC_UPLOAD", "IOException: ${e.message}")
+            onResult(null)
+        } catch (e: Exception) {
+            Log.e("PROFILE_PIC_UPLOAD", "Exception: ${e.message}")
+            onResult(null)
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +143,12 @@ fun SignUpScreen(navController: NavController){
         mutableStateOf(false)
     }
 
+    var profilePicUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    var coroutineScope = rememberCoroutineScope()
+
     var context = LocalContext.current.applicationContext
     var sharedPrefrences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
     var editor = sharedPrefrences.edit()
@@ -88,13 +157,28 @@ fun SignUpScreen(navController: NavController){
     , modifier = Modifier
             .fillMaxSize()) {
 
-        Spacer(modifier = Modifier
-            .height(50.dp))
+        Text(text = "Signup"
+            , fontSize = 35.sp
+            , fontWeight = FontWeight.Bold
+            , modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 50.dp)
+            , textAlign = TextAlign.Center)
 
-        AuthenticationLogoTextCompose(logo = painterResource(id = R.drawable.signup_logo), text = "Sign up")
 
-        Spacer(modifier = Modifier
-            .height(10.dp))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp)
+            , contentAlignment = Alignment.Center){
+            Column {
+                GalleryPickerCompose { uri->
+                    profilePicUri=uri
+                    Log.d("URI",profilePicUri.toString())
+                }
+
+            }
+        }
+
 
         Box(modifier = Modifier
             .fillMaxSize()){
@@ -129,7 +213,6 @@ fun SignUpScreen(navController: NavController){
 
             Column(modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp)) {
-
 
                 Spacer(modifier = Modifier
                     .height(130.dp))
@@ -253,10 +336,91 @@ fun SignUpScreen(navController: NavController){
                         .fillMaxWidth()) {
 
                     Button(onClick = {
-                        navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route)
-                        editor.putBoolean(Keys.LOGIN_STATUS,true)
-                        editor.commit()
-                        editor.apply()
+
+                        coroutineScope.launch {
+
+                            val patients = Patient(
+                                name = name.toString().trim(),
+                                username = username.toString().trim(),
+                                email = email.toString().trim(),
+                                password = password.toString().trim(),
+                                profilePicUrl = ""
+                            )
+
+//// Convert Patient object to JSON string
+//                            val jsonString = Gson().toJson(patients)
+//                            val userRequestBody = jsonString.toRequestBody("application/json".toMediaTypeOrNull()) // Ensure correct content type
+//
+//// Convert URI to file (Scoped Storage Fix)
+//                            val file = profilePicUri?.let { getFileFromUri(it, context) }
+//                            if (file == null) {
+//                                Log.e("Signup", "Error: Unable to get file from URI")
+//                                return@launch
+//                            }
+//
+//                            val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+//                            val imagePart = MultipartBody.Part.createFormData("image", file.name, requestFile)
+//
+//// Make API call
+//                            val call = AuthApiInstance.api.signup(imagePart, userRequestBody)
+//                            call.enqueue(object : Callback<PatientsResponse> {
+//                                override fun onResponse(call: Call<PatientsResponse>, response: Response<PatientsResponse>) {
+//                                    if (response.isSuccessful) {
+//                                        Log.d("Signup", "Success: ${response.body()}")
+//                                    } else {
+//                                        Log.e("Signup", "Failure: ${response.errorBody()?.string()}")
+//                                    }
+//                                }
+//
+//                                override fun onFailure(call: Call<PatientsResponse>, t: Throwable) {
+//                                    Log.e("Signup", "Error: ${t.message}")
+//                                }
+//                            })
+
+                            try{
+                                var response = AuthApiInstance.api.signup(patients)
+
+                                if(response.isSuccessful){
+                                    Log.d("API_RESPONSE",response.body().toString())
+
+                                    if(profilePicUri!=null){
+                                        Log.d("PROFILE_PIC_URI",profilePicUri.toString())
+                                        uploadProfilePicture(context = context, imageUri = profilePicUri!!,username=username.toString().trim()){ patients->
+                                           if (patients != null) {
+                                               editor.putString(Keys.USERNAME,patients.username)
+                                           }
+                                            if (patients != null) {
+                                                editor.putString(Keys.PROFILE_PIC_URL,patients.profilePicUrl)
+                                            }
+                                            editor.commit()
+                                            editor.apply()
+
+                                            Handler(Looper.getMainLooper()).post {
+                                                navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+                                                    popUpTo(0){
+                                                        inclusive=true
+                                                    }
+                                            }
+
+
+                                            }
+                                        }
+                                    }else
+                                        Log.d("PROFILE_PIC_NULL","profile pic uri is null")
+
+                                }else
+                                    Log.d("API_ERROR",response.errorBody().toString())
+
+                            }catch (e:Exception){
+                                e.localizedMessage?.let { Log.d("API_EXPECTION", it.toString()) }
+                            }
+
+
+
+                        }
+
+
+
                     }
                         , colors = ButtonDefaults.buttonColors(
                             containerColor = BlueBackground
@@ -279,6 +443,64 @@ fun SignUpScreen(navController: NavController){
 
     }
 }
+
+fun getFileFromUri(uri: Uri, context: Context): File? {
+    val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+    val file = File(context.cacheDir, "temp_profile.jpg")
+    file.outputStream().use { output -> inputStream.copyTo(output) }
+    return file
+}
+
+
+fun getRealPathFromURI(uri: Uri, contentResolver: ContentResolver): String? {
+    var realPath: String? = null
+    val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+    cursor?.use {
+        if (it.moveToFirst()) {
+            val columnIndex = it.getColumnIndex(MediaStore.Images.Media.DATA)
+            if (columnIndex != -1) {
+                realPath = it.getString(columnIndex)
+            }
+        }
+    }
+    return realPath
+}
+
+
+fun uriToFile(context: Context, uri: Uri): File? {
+    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+    val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir)
+
+    inputStream?.use { input ->
+        FileOutputStream(tempFile).use { output ->
+            input.copyTo(output)
+        }
+    }
+
+    return if (tempFile.exists()) tempFile else null
+}
+
+fun prepareFilePart(context: Context, uri: Uri, partName: String): MultipartBody.Part {
+
+    val contentResolver: ContentResolver = context.contentResolver
+    val inputStream: InputStream? = contentResolver.openInputStream(uri)
+    val tempFile = File.createTempFile("upload", ".jpg", context.cacheDir)
+
+    inputStream?.use { input ->
+        FileOutputStream(tempFile).use { output ->
+            input.copyTo(output)
+        }
+    }
+
+    val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), tempFile)
+    return MultipartBody.Part.createFormData(partName, tempFile.name, requestFile)
+}
+
+fun createPatientRequestBody(patients: Patient): RequestBody {
+    val json = Gson().toJson(patients)
+    return RequestBody.create("application/json".toMediaTypeOrNull(), json)
+}
+
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
