@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.CircularImageProfile
@@ -113,6 +114,10 @@ fun ProfileFragment(navController:NavController){
         
         mutableStateOf<Uri?>(null)
     }
+
+    var username = sharedPrefrences.getString(Keys.USERNAME,"")
+
+    var profilePicUrl = sharedPrefrences.getString(Keys.PROFILE_PIC_URL,"")
 
     if(editProfileDialogState){
         AlertDialog(onDismissRequest = {
@@ -235,15 +240,22 @@ fun ProfileFragment(navController:NavController){
                 Box(modifier = Modifier
                     .fillMaxWidth()
                 , contentAlignment = Alignment.Center){
-                    if(profileUri==null){
+                    if(profilePicUrl==null){
                         Image(painter = painterResource(id = R.drawable.img)
                             , contentDescription = ""
                             , modifier = Modifier
                                 .size(180.dp)
                                 .offset(y = -50.dp)
                             , contentScale = ContentScale.Crop)
-                    }else
-                        CircularImageProfile(modifier = Modifier, uri = profileUri)
+                    }else{
+                        Image(painter = rememberAsyncImagePainter(model = profilePicUrl)
+                            , contentDescription = ""
+                            , modifier = Modifier
+                                .size(180.dp)
+                                .offset(y = -40.dp)
+                                .clip(CircleShape)
+                            , contentScale = ContentScale.Crop)
+                    }
 
                 }
 
@@ -257,7 +269,7 @@ fun ProfileFragment(navController:NavController){
                 , textAlign = TextAlign.Center
                 , style = MaterialTheme.typography.titleMedium)
 
-                Text(text = "kelaskaraditya1"
+                Text(text = username.toString()
                 , fontSize = 20.sp
                 , style = MaterialTheme.typography.bodySmall
                 , color = Color.Gray
@@ -402,7 +414,8 @@ fun ProfileFragment(navController:NavController){
                             containerColor = BlueBackground
                         )
                         , modifier = Modifier
-                            .width(200.dp)) {
+                            .width(200.dp)
+                            .padding(bottom = 20.dp)) {
                         Text(text = "Logout"
                             , fontSize = 20.sp
                             , fontWeight = FontWeight.W500

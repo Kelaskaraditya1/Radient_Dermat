@@ -1,5 +1,6 @@
 package com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments
 
+import android.content.Context
 import android.net.Uri
 import android.widget.Space
 import android.widget.Toast
@@ -66,6 +67,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseaseTabCompose
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
@@ -107,6 +109,14 @@ fun HomeFragment(){
 
     var context = LocalContext.current.applicationContext
 
+    var sharedPrefrences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME,Context.MODE_PRIVATE)
+
+    var editor = sharedPrefrences.edit()
+
+    var username = sharedPrefrences.getString(Keys.USERNAME,"")
+
+    var profilePicUrl = sharedPrefrences.getString(Keys.PROFILE_PIC_URL,"")
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(purpleGradient)
@@ -121,7 +131,7 @@ fun HomeFragment(){
         , verticalAlignment = Alignment.CenterVertically
         , horizontalArrangement = Arrangement.SpaceBetween){
             Column(verticalArrangement = Arrangement.Center) {
-                Text(text = "Greetings, kelaskaraditya1"
+                Text(text = "Greetings, $username"
                     , fontSize = 22.sp
                     , color = Color.White
                     , fontWeight = FontWeight.W600
@@ -130,23 +140,25 @@ fun HomeFragment(){
                 Spacer(modifier = Modifier
                     .height(5.dp))
 
-                Text(text = "Text for slogan"
+                Text(text = "We wish you have a great day!"
                     , fontSize = 17.sp
                     , color = Color.White
                 , fontWeight = FontWeight.W500)
             }
-            if(imageUri!=null){
-                Image(painter = painterResource(id = R.drawable.img)
+            if(profilePicUrl!=null){
+                Image(painter = rememberAsyncImagePainter(model = profilePicUrl)
                     , contentDescription =""
                     , modifier = Modifier
                         .size(100.dp)
-                        .clip(CircleShape))
+                        .clip(CircleShape)
+                , contentScale = ContentScale.Crop)
             }else{
                 Image(painter = painterResource(id = R.drawable.profile)
                     , contentDescription =""
                 , modifier = Modifier
                         .size(100.dp)
-                        .clip(CircleShape))
+                        .clip(CircleShape)
+                , contentScale = ContentScale.Crop)
             }
 
         }

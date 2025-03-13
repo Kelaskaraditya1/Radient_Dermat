@@ -1,4 +1,4 @@
-package com.starkindustries.radientdermat.Data
+package com.starkindustries.radientdermat.Frontend.Screens.Patient.Data
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

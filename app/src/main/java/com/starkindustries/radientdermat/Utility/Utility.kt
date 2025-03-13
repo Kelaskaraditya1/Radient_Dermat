@@ -1,20 +1,15 @@
 package com.starkindustries.radientdermat.Utility
 
-import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Camera
 import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import com.starkindustries.radientdermat.Data.TabItem
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.TabItem
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.DiseasesTab
 import com.starkindustries.radientdermat.R
 
