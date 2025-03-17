@@ -96,6 +96,7 @@ fun uploadProfilePicture(context: Context, imageUri: Uri, username: String, onRe
 
             if (response.isSuccessful) {
                 Log.d("PROFILE_PIC_UPLOAD", "Upload Successful: ${response.body()}")
+
                 onResult(response.body()) // Pass success response
             } else {
                 val errorBody = response.errorBody()?.string()
@@ -386,15 +387,16 @@ fun SignUpScreen(navController: NavController){
                                     if(profilePicUri!=null){
                                         Log.d("PROFILE_PIC_URI",profilePicUri.toString())
                                         uploadProfilePicture(context = context, imageUri = profilePicUri!!,username=username.toString().trim()){ patients->
-                                           if (patients != null) {
-                                               editor.putString(Keys.USERNAME,patients.username)
-                                           }
+
                                             if (patients != null) {
                                                 editor.putString(Keys.PROFILE_PIC_URL,patients.profilePicUrl)
+                                                editor.putString(Keys.USERNAME,patients.username)
+                                                editor.putString(Keys.NAME,patients.name)
+                                                editor.putString(Keys.EMAIL,patients.email)
+                                                editor.putString(Keys.PASSWORD,password)
+                                                editor.commit()
+                                                editor.apply()
                                             }
-                                            editor.commit()
-                                            editor.apply()
-
                                             Handler(Looper.getMainLooper()).post {
                                                 navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
                                                     popUpTo(0){

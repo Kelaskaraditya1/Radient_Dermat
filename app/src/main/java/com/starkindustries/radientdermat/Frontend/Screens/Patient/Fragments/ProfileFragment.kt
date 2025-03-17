@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -81,9 +83,10 @@ import com.starkindustries.radientdermat.ui.theme.orangeGradient
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
 import com.starkindustries.radientdermat.ui.theme.redGradientBrush
 import com.starkindustries.radientdermat.ui.theme.whiteBrush
+import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileFragment(navController:NavController){
+fun ProfileFragment(navController:NavController,pagerState: PagerState){
 
     val scrollState = rememberScrollState()
 
@@ -118,6 +121,8 @@ fun ProfileFragment(navController:NavController){
     var username = sharedPrefrences.getString(Keys.USERNAME,"")
 
     var profilePicUrl = sharedPrefrences.getString(Keys.PROFILE_PIC_URL,"")
+
+    var name = sharedPrefrences.getString(Keys.NAME,"")
 
     if(editProfileDialogState){
         AlertDialog(onDismissRequest = {
@@ -205,7 +210,8 @@ fun ProfileFragment(navController:NavController){
             .height(100.dp))
         
         Box(modifier = Modifier
-            .fillMaxSize()){
+            .fillMaxSize()
+            .padding(bottom = 25.dp)){
 
             Canvas(
                 modifier = Modifier
@@ -260,8 +266,8 @@ fun ProfileFragment(navController:NavController){
                 }
 
 
-                Text(text = "Aditya Kelaskar"
-                    , fontSize = 30.sp
+                Text(text = name.toString()
+                    , fontSize = 32.sp
                     , color = Color.Black
                 , modifier = Modifier
                         .fillMaxWidth()
@@ -270,7 +276,7 @@ fun ProfileFragment(navController:NavController){
                 , style = MaterialTheme.typography.titleMedium)
 
                 Text(text = username.toString()
-                , fontSize = 20.sp
+                , fontSize = 22.sp
                 , style = MaterialTheme.typography.bodySmall
                 , color = Color.Gray
                 , modifier = Modifier
@@ -313,6 +319,11 @@ fun ProfileFragment(navController:NavController){
                             .weight(1f)
                             .size(150.dp)
                             .padding(start = 5.dp)
+                            .clickable {
+                                coRoutineScope.launch {
+                                    pagerState.animateScrollToPage(1)
+                                }
+                            }
                             , colors = CardDefaults.cardColors(
                                 contentColor = Color.White
                             )) {
@@ -414,8 +425,7 @@ fun ProfileFragment(navController:NavController){
                             containerColor = BlueBackground
                         )
                         , modifier = Modifier
-                            .width(200.dp)
-                            .padding(bottom = 20.dp)) {
+                            .width(200.dp)) {
                         Text(text = "Logout"
                             , fontSize = 20.sp
                             , fontWeight = FontWeight.W500
@@ -434,5 +444,5 @@ fun ProfileFragment(navController:NavController){
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun ProfileScreenPreview(){
-    ProfileFragment(rememberNavController())
+//    ProfileFragment(rememberNavController(),)
 }

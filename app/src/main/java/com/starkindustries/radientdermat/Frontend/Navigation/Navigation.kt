@@ -1,6 +1,7 @@
 package com.starkindustries.radientdermat.Frontend.Navigation
 
 import SplashScreen
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.core.splashscreen.SplashScreen
 import androidx.navigation.Navigation
@@ -15,10 +16,14 @@ import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.Home
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.ProfileFragment
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.PatiendDashboardScreen
 import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.SignUpScreen
+import com.starkindustries.radientdermat.Utility.Utility
 
 @Composable
 fun Navigation(){
     var navController = rememberNavController()
+    val pagerState = rememberPagerState(initialPage = 0) {
+        Utility.getTabItemList().size
+    }
     NavHost(navController = navController, startDestination = Routes.SPLASH_SCREEN_ROUTE.route){
 
         composable(Routes.SPLASH_SCREEN_ROUTE.route){
@@ -34,7 +39,7 @@ fun Navigation(){
         }
 
         composable(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
-            PatiendDashboardScreen(navController)
+            PatiendDashboardScreen(navController,pagerState)
         }
         composable(Routes.HOME_FRAGMENT_ROUTE.route){
             HomeFragment()
@@ -43,7 +48,7 @@ fun Navigation(){
             CaptureFragment()
         }
         composable(Routes.PROFILE_FRAGMENT_ROUTE.route){
-            ProfileFragment(navController)
+            ProfileFragment(navController,pagerState =pagerState)
 
         }
         composable(Routes.NO_INTERNET_SCREEN_ROUTE.route){

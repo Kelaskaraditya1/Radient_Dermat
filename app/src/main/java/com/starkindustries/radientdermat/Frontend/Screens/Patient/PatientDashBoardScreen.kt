@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -58,14 +59,14 @@ import com.starkindustries.radientdermat.ui.theme.purpleGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PatiendDashboardScreen(navController: NavController) {
+fun PatiendDashboardScreen(navController: NavController,pagerState: PagerState) {
 
     val context = LocalContext.current.applicationContext
     val sharedPreferences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
-    val pagerState = rememberPagerState(initialPage = 0) {
-        Utility.getTabItemList().size
-    }
+//    val pagerState = rememberPagerState(initialPage = 0) {
+//        Utility.getTabItemList().size
+//    }
     val activity = LocalContext.current as? ComponentActivity
 
 
@@ -161,7 +162,7 @@ fun PatiendDashboardScreen(navController: NavController) {
                 when (index) {
                     0 -> HomeFragment()
                     1 -> CaptureFragment()
-                    2 -> ProfileFragment(navController)
+                    2 -> ProfileFragment(navController, pagerState = pagerState)
                 }
             }
 
@@ -173,5 +174,5 @@ fun PatiendDashboardScreen(navController: NavController) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PatientDashboardPreview(){
-    PatiendDashboardScreen(navController = rememberNavController())
+//    PatiendDashboardScreen(navController = rememberNavController())
 }
