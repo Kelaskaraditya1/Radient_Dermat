@@ -18,7 +18,8 @@ data class Patient(
     val name: String,
     val password: String,
     val profilePicUrl: String,
-    val username: String
+    val username: String,
+    val medicalHistory:String
 )
 
 data class PatientsResponse(
@@ -33,6 +34,5 @@ data class LoginResponse(
 data class UpdatedPatient(
     val name:String,
     val email:String,
-    val profilePicUri:String
 )
 

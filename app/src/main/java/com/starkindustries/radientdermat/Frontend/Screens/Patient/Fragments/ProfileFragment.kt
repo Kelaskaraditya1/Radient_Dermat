@@ -2,6 +2,7 @@ package com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.widget.Space
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
@@ -68,10 +69,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.starkindustries.radientdermat.Backend.Instance.AuthApiInstance
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.CircularImageProfile
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.GalleryPickerCompose
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatedPatient
+import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.getFileFromUri
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
@@ -84,7 +89,47 @@ import com.starkindustries.radientdermat.ui.theme.orangeGradient
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
 import com.starkindustries.radientdermat.ui.theme.redGradientBrush
 import com.starkindustries.radientdermat.ui.theme.whiteBrush
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.HttpException
+import java.io.File
+import java.io.IOException
+
+fun uploadProfilePicture(context: Context, imageUri: Uri, username: String, onResult: (Patient?) -> Unit, jwtToken:String) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val file: File = getFileFromUri(imageUri,context) ?: throw Exception("File conversion failed")
+
+            val requestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+            val multipartBody = MultipartBody.Part.createFormData("image", file.name, requestBody)
+
+            val response = AuthApiInstance.api.updateProfilePic(username,multipartBody,"Bearer $jwtToken")
+
+            if (response.isSuccessful) {
+                Log.d("PROFILE_PIC_UPLOAD", "Upload Successful: ${response.body()}")
+
+                onResult(response.body()) // Pass success response
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e("PROFILE_PIC_UPLOAD", "Upload Failed: HTTP ${response.code()} - $errorBody")
+                onResult(null) // Handle failure
+            }
+        } catch (e: HttpException) {
+            Log.e("PROFILE_PIC_UPLOAD", "HttpException: ${e.message}")
+            onResult(null)
+        } catch (e: IOException) {
+            Log.e("PROFILE_PIC_UPLOAD", "IOException: ${e.message}")
+            onResult(null)
+        } catch (e: Exception) {
+            Log.e("PROFILE_PIC_UPLOAD", "Exception: ${e.message}")
+            onResult(null)
+        }
+    }
+}
 
 @Composable
 fun ProfileFragment(navController:NavController,pagerState: PagerState){
@@ -129,13 +174,55 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
         mutableStateOf<Uri?>(null)
     }
 
+    val jwtToken = sharedPrefrences.getString(Keys.JWT_TOKEN,"")
+
     if(editProfileDialogState){
         AlertDialog(onDismissRequest = {
             editProfileDialogState=false
         }, confirmButton = {
             Button(onClick = {
-                editProfileDialogState=false
-                Toast.makeText(context, "Profile Updated Successfully!!", Toast.LENGTH_SHORT).show()
+
+                var updatePatient = UpdatedPatient(
+                    name = updatedName,
+                    email = updatedEmail
+                )
+
+                try{
+
+                    coRoutineScope.launch {
+                        var response = username?.let { AuthApiInstance.api.updatePatientProfile(username= it, updatePatient = updatePatient, jwtToken = "Bearer ${jwtToken}") }
+
+                        if (response != null) {
+                            if(response.isSuccessful){
+                                var patient = response.body()
+                                Log.d("UPDATED_PROFILE_SUCCESSFULL", response.body().toString())
+                                if (patient != null) {
+                                    editor.putString(Keys.NAME,patient.name)
+                                    editor.putString(Keys.EMAIL,patient.email)
+                                    editor.commit()
+                                    editor.apply()
+
+                                    updatedPhotoUri?.let {
+                                        if (username != null) {
+                                            if (jwtToken != null) {
+                                                uploadProfilePicture(context=context, imageUri = it, username = username, jwtToken = jwtToken, onResult = {}){ patient->
+
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                                editProfileDialogState=false
+                            }else
+                                response.errorBody()
+                                    ?.let { Log.d("UPDATED_PROFILE_ERROR", it.string()) }
+                        }
+                    }
+
+                }catch (e:Exception){
+                    Log.d("UPDATE_PROFILE_EXCEPTION",e.localizedMessage.toString())
+                }
             }) {
                 Text(text = "Update"
                 , fontSize = 18.sp

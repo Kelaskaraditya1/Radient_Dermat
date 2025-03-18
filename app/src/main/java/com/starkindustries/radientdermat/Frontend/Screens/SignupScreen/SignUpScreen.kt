@@ -97,7 +97,7 @@ fun uploadProfilePicture(context: Context, imageUri: Uri, username: String, onRe
             if (response.isSuccessful) {
                 Log.d("PROFILE_PIC_UPLOAD", "Upload Successful: ${response.body()}")
 
-                onResult(response.body()) // Pass success response
+                onResult(response.body()) // Pass success responsea
             } else {
                 val errorBody = response.errorBody()?.string()
                 Log.e("PROFILE_PIC_UPLOAD", "Upload Failed: HTTP ${response.code()} - $errorBody")
@@ -345,7 +345,8 @@ fun SignUpScreen(navController: NavController){
                                 username = username.toString().trim(),
                                 email = email.toString().trim(),
                                 password = password.toString().trim(),
-                                profilePicUrl = ""
+                                profilePicUrl = "",
+                                medicalHistory = ""
                             )
 
 //// Convert Patient object to JSON string
