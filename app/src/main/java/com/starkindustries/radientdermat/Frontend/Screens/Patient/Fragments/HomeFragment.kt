@@ -134,7 +134,7 @@ fun HomeFragment(){
     }
 
     var isChatEnable by remember{
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) { uri->

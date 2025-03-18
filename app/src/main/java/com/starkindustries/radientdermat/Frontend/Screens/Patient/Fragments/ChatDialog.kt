@@ -2,6 +2,7 @@ package com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -40,17 +41,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.rememberAsyncImagePainter
+import com.google.ai.client.generativeai.GenerativeModel
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Message
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.Purple40
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen() {
     var messageText by remember { mutableStateOf(TextFieldValue("")) }
     var messages by remember { mutableStateOf(listOf<Message>()) }
+
+    var messageRequest by remember {
+        mutableStateOf("")
+    }
+
+    var coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier
         .fillMaxSize()) {
@@ -92,10 +101,12 @@ fun ChatScreen() {
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(
                     onSend = {
-                        if (messageText.text.isNotBlank()) {
-                            messages = messages + Message(messageText.text, isUser = true)
-                            messages = messages + Message(getBotResponse(messageText.text), isUser = false)
-                            messageText = TextFieldValue("")
+                        coroutineScope.launch {
+                            if (messageText.text.isNotBlank()) {
+                                messages = messages + Message(messageText.text, isUser = true)
+                                messages = messages + Message(getBotResponse(messageText.text), isUser = false)
+                                messageText = TextFieldValue("")
+                            }
                         }
                     }
                 ),
@@ -108,11 +119,18 @@ fun ChatScreen() {
                         .padding(end = 5.dp)
                         .size(45.dp)
                     ,onClick = {
-                        if (messageText.text.isNotBlank()) {
-                            messages = messages + Message(messageText.text, isUser = true)
-                            messages = messages + Message(getBotResponse(messageText.text), isUser = false)
-                            messageText = TextFieldValue("")
+
+                        coroutineScope.launch {
+                            if (messageText.text.isNotBlank()) {
+                                messageRequest = messageText.text
+                                messageText = TextFieldValue("")
+                                messages = messages + Message(messageRequest, isUser = true)
+                                messages = messages + Message(getBotResponse(messageRequest), isUser = false)
+
+                            }
                         }
+
+
                     }
                     , shape = CircleShape
                     , containerColor = Purple40)
@@ -183,12 +201,20 @@ fun ChatBubble(message: Message) {
 }
 
 // Simulated bot response
-fun getBotResponse(userInput: String): String {
-    return when {
-        userInput.contains("hello", ignoreCase = true) -> "Hi there! How can I assist you?"
-        userInput.contains("car", ignoreCase = true) -> "Are you looking to rent a car?"
-        else -> "I'm a simple bot, I don't understand much yet!"
-    }
+suspend fun getBotResponse(userInput: String): String {
+
+    var generativeModel = GenerativeModel(
+        modelName = "gemini-1.5-pro",
+        apiKey = "AIzaSyC-UFan8En1abi5CWwzEA5BWhIeN91fU7k"
+    )
+
+    var prompt = userInput
+
+    var response = generativeModel.generateContent(prompt).text
+
+    Log.d("API_RESPONSE",response.toString())
+
+    return response.toString()
 }
 
 @Preview(showBackground = true, showSystemUi = true)
