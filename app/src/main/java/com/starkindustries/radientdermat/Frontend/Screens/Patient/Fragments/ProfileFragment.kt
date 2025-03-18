@@ -73,6 +73,7 @@ import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.CircularImageProfile
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.GalleryPickerCompose
 import com.starkindustries.radientdermat.R
+import com.starkindustries.radientdermat.Utility.Utility
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
 import com.starkindustries.radientdermat.ui.theme.Purple40
 import com.starkindustries.radientdermat.ui.theme.blueGradientBrush
@@ -124,6 +125,10 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
 
     var name = sharedPrefrences.getString(Keys.NAME,"")
 
+    var updatedPhotoUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
     if(editProfileDialogState){
         AlertDialog(onDismissRequest = {
             editProfileDialogState=false
@@ -156,7 +161,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                     .fillMaxWidth()
                 , contentAlignment = Alignment.Center){
                     GalleryPickerCompose { uri->
-                        profileUri=uri
+                        updatedPhotoUri=uri
                     }
                 }
 
@@ -210,13 +215,12 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
             .height(100.dp))
         
         Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 25.dp)){
+            .fillMaxSize()){
 
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(650.dp) // Increased height of the Canvas
+                    .height(680.dp) // Increased height of the Canvas
             ) {
                 val path = Path().apply {
                     // Start from the top-left corner
@@ -444,5 +448,8 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun ProfileScreenPreview(){
-//    ProfileFragment(rememberNavController(),)
+    val pagerState = rememberPagerState(initialPage = 0) {
+        Utility.getTabItemList().size
+    }
+    ProfileFragment(rememberNavController(), pagerState = pagerState)
 }

@@ -25,7 +25,14 @@ data class PatientsResponse(
     val status: String,
     val message: String
 )
+
 data class LoginResponse(
     val jwtToken:String
+)
+
+data class UpdatedPatient(
+    val name:String,
+    val email:String,
+    val profilePicUri:String
 )
 

@@ -22,10 +22,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
@@ -36,6 +40,7 @@ import androidx.compose.material.icons.outlined.BrowseGallery
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.PhotoCameraBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -46,6 +51,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,11 +62,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,6 +78,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseaseTabCompose
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Message
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
 import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
@@ -77,6 +87,28 @@ import com.starkindustries.radientdermat.ui.theme.orangeGradient
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+
+@Composable
+fun CustomAlertDialog(){
+
+    Column(modifier = Modifier
+        .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    , verticalArrangement = Arrangement.Center) {
+        Box(modifier = Modifier
+            .height(450.dp)
+            .width(300.dp)
+            .background(Color.LightGray)){
+            Column(modifier = Modifier
+                .fillMaxSize()) {
+                ChatScreen()
+            }
+        }
+    }
+
+
+}
 
 @Composable
 fun HomeFragment(){
@@ -101,6 +133,10 @@ fun HomeFragment(){
         mutableStateOf(true)
     }
 
+    var isChatEnable by remember{
+        mutableStateOf(true)
+    }
+
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) { uri->
         imageUri=uri;
     }
@@ -116,6 +152,20 @@ fun HomeFragment(){
     var username = sharedPrefrences.getString(Keys.USERNAME,"")
 
     var profilePicUrl = sharedPrefrences.getString(Keys.PROFILE_PIC_URL,"")
+
+    if(isChatEnable){
+        AlertDialog(onDismissRequest = {
+            isChatEnable=false
+        },
+            modifier = Modifier
+                .height(550.dp),
+            confirmButton = {
+            },
+            text = {
+               ChatScreen()
+            }
+        )
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -339,7 +389,9 @@ fun HomeFragment(){
             .fillMaxWidth()
             .padding(end = 5.dp)
         , contentAlignment = Alignment.BottomEnd){
-            FloatingActionButton(onClick = {  }
+            FloatingActionButton(onClick = {
+                isChatEnable=!isChatEnable
+            }
             , containerColor =  Color(0xFF00E676)) {
                 Icon(imageVector = Icons.Default.ChatBubble
                     , contentDescription = ""

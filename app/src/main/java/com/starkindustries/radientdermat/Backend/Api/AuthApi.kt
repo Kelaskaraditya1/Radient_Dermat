@@ -38,5 +38,7 @@ interface AuthApi {
     @GET("auth/greetings")
     suspend fun greetings():Response<String>
     
-    suspend fun getPatientByUsername():Response<Patient>
+    
+
+
 }
