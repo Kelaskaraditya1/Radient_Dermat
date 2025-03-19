@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Application.Application
 import com.starkindustries.radientdermat.Frontend.Navigation.Navigation
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.DiseasePredictionTest
 import com.starkindustries.radientdermat.ui.theme.RadientDermatTheme
 
 class MainActivity : ComponentActivity() {

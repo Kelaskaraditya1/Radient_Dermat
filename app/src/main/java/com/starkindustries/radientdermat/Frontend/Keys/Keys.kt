@@ -19,6 +19,8 @@ class Keys {
         const val NO_INTERNET_SCREEN="NO_INTERNET_SCREEN"
         const val BASE_URL="http://192.168.0.103:8080/"
         const val JWT_TOKEN="JWT_TOKEN"
+        const val MODEL_NAME="gemini-1.5-pro"
+        const val API_KEY="AIzaSyC-UFan8En1abi5CWwzEA5BWhIeN91fU7k"
 
 
     }

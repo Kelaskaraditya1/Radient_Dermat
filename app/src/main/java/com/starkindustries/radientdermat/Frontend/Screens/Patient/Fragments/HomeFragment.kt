@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -152,6 +153,61 @@ fun HomeFragment(){
     var username = sharedPrefrences.getString(Keys.USERNAME,"")
 
     var profilePicUrl = sharedPrefrences.getString(Keys.PROFILE_PIC_URL,"")
+
+    var uploadFromGalleryTest by remember{
+        mutableStateOf(true)
+    }
+
+    var uploadFromGalleryImageUri by remember{
+        mutableStateOf<Uri?>(null)
+    }
+
+    if(uploadFromGalleryTest){
+
+        AlertDialog(onDismissRequest = {
+            uploadFromGalleryTest=false
+        }, confirmButton = {
+
+        }
+        , title = {
+            Text(text = "Take Test"
+            , fontWeight = FontWeight.W500)
+            }
+        , text = {
+            Column {
+
+                Text(text = "Uload an image from your Gallery."
+                , fontSize = 18.sp
+                , fontWeight = FontWeight.W500)
+
+                Spacer(modifier = Modifier
+                    .height(15.dp))
+
+                if(uploadFromGalleryImageUri!=null){
+                    Image(painter = painterResource(id = R.drawable.placeholder)
+                        , contentDescription = ""
+                        , modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                            .offset(y = -30.dp))
+                }else{
+                    Image(
+                        painter = painterResource(id = R.drawable.hive),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .size(width = 200.dp, height = 200.dp) // Set a fixed size
+                        ,contentScale = ContentScale.Crop // Ensures the image is cropped to fit
+                    )
+                }
+
+            }
+
+            }
+        , modifier = Modifier
+                .height(550.dp))
+
+    }
 
     if(isChatEnable){
         AlertDialog(onDismissRequest = {
@@ -354,11 +410,11 @@ fun HomeFragment(){
                 .size(150.dp)
                 .padding(start = 5.dp)
                 .clickable {
-                    galleryLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                    if (imageUri != null)
-                        dialogState = true
+
+                    uploadFromGalleryTest = !uploadFromGalleryTest
+//                    galleryLauncher.launch(
+//                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//                    )
 
                 }
                 , colors = CardDefaults.cardColors(

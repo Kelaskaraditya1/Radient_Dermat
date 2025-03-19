@@ -204,8 +204,8 @@ fun ChatBubble(message: Message) {
 suspend fun getBotResponse(userInput: String): String {
 
     var generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-pro",
-        apiKey = "AIzaSyC-UFan8En1abi5CWwzEA5BWhIeN91fU7k"
+        modelName = Keys.MODEL_NAME,
+        apiKey = Keys.API_KEY
     )
 
     var prompt = userInput
