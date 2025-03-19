@@ -44,6 +44,7 @@ interface AuthApi {
     @PUT("auth/update-profile/{username}")
     suspend fun updatePatientProfile(@Path("username") username: String,@Body updatePatient: UpdatedPatient,@Header("Authorization") jwtToken:String):Response<Patient>
 
+    @Multipart
     @PUT("/auth/update-profile-pic/{username}")
     suspend fun updateProfilePic(@Path("username") username: String,@Part image: MultipartBody.Part,@Header("Authorization") jwtToken:String):Response<Patient>
 

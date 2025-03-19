@@ -99,7 +99,7 @@ import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
 
-fun uploadProfilePicture(context: Context, imageUri: Uri, username: String, onResult: (Patient?) -> Unit, jwtToken:String) {
+fun uploadProfilePicture(context: Context, imageUri: Uri, username: String, jwtToken:String,onResult: (Patient?) -> Unit) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val file: File = getFileFromUri(imageUri,context) ?: throw Exception("File conversion failed")
@@ -107,7 +107,7 @@ fun uploadProfilePicture(context: Context, imageUri: Uri, username: String, onRe
             val requestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
             val multipartBody = MultipartBody.Part.createFormData("image", file.name, requestBody)
 
-            val response = AuthApiInstance.api.updateProfilePic(username,multipartBody,"Bearer $jwtToken")
+            val response = AuthApiInstance.api.updateProfilePic(username = username,multipartBody, jwtToken = "Bearer ${jwtToken.trim()}")
 
             if (response.isSuccessful) {
                 Log.d("PROFILE_PIC_UPLOAD", "Upload Successful: ${response.body()}")
@@ -190,7 +190,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                 try{
 
                     coRoutineScope.launch {
-                        var response = username?.let { AuthApiInstance.api.updatePatientProfile(username= it, updatePatient = updatePatient, jwtToken = "Bearer ${jwtToken}") }
+                        var response = username?.let { AuthApiInstance.api.updatePatientProfile(username= it, updatePatient = updatePatient, jwtToken = "Bearer $jwtToken") }
 
                         if (response != null) {
                             if(response.isSuccessful){
@@ -205,15 +205,25 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                                     updatedPhotoUri?.let {
                                         if (username != null) {
                                             if (jwtToken != null) {
-                                                uploadProfilePicture(context=context, imageUri = it, username = username, jwtToken = jwtToken, onResult = {}){ patient->
+
+                                                Log.d("UPDATE_PROFILE_PIC_JWT_TOKEN",jwtToken.toString())
+
+                                                uploadProfilePicture(context=context, imageUri = updatedPhotoUri!!, username=username, jwtToken = "$jwtToken"){ patient->
+
+                                                    if(patient!=null){
+                                                        editor.putString(Keys.PROFILE_PIC_URL,patient.profilePicUrl)
+                                                        editor.commit()
+                                                        editor.apply()
+                                                        editProfileDialogState=false
+                                                    }
 
                                                 }
+
                                             }
                                         }
                                     }
 
                                 }
-                                editProfileDialogState=false
                             }else
                                 response.errorBody()
                                     ?.let { Log.d("UPDATED_PROFILE_ERROR", it.string()) }
