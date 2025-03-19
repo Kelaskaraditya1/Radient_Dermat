@@ -1,7 +1,10 @@
 package com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import android.widget.Space
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -67,27 +70,111 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.java.GenerativeModelFutures
+import com.google.ai.client.generativeai.type.Content
+import com.google.ai.client.generativeai.type.GenerateContentResponse
+import com.google.common.util.concurrent.FutureCallback
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseaseTabCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Message
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
+import com.starkindustries.radientdermat.Utility.getSymptoms
+import com.starkindustries.radientdermat.ui.theme.Purple40
 import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
 import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
 import com.starkindustries.radientdermat.ui.theme.orangeGradient
 import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
+
+fun getSymptoms(diseaseName: String, context: Context, onResult: (String) -> Unit) {
+    val mainExecutor = ContextCompat.getMainExecutor(context)
+
+    val generativeModel = GenerativeModel(
+        modelName = Keys.MODEL_NAME,
+        apiKey = Keys.API_KEY
+    )
+
+    val model = GenerativeModelFutures.from(generativeModel)
+
+    val content = Content.Builder()
+        .text("Give Symptoms of $diseaseName this disease in 1-2 paragraphs. There should be no mention of AI in the response.")
+        .build()
+
+    val response: ListenableFuture<GenerateContentResponse>? = model.generateContent(content)
+
+    Futures.addCallback(response, object : FutureCallback<GenerateContentResponse> {
+        override fun onSuccess(result: GenerateContentResponse?) {
+            result?.let {
+                val responseText = it.text ?: "No response received"
+                Log.d("GeminiResponse", "Success: $responseText")
+                onResult(responseText)  // Pass the result to the callback
+            }
+        }
+
+        override fun onFailure(t: Throwable) {
+            Log.e("GeminiResponse", "Error: ${t.message}", t)
+            onResult("Failed to fetch symptoms")  // Pass an error message
+        }
+    }, mainExecutor)
+}
+
+
+fun getRemedy(diseaseName: String, context: Context, onResult: (String) -> Unit) {
+    val mainExecutor = ContextCompat.getMainExecutor(context)
+
+    val generativeModel = GenerativeModel(
+        modelName = Keys.MODEL_NAME,
+        apiKey = Keys.API_KEY
+    )
+
+    val model = GenerativeModelFutures.from(generativeModel)
+
+    val content = Content.Builder()
+        .text("Give remedy of $diseaseName this disease in 1-2 paragraphs. There should be no mention of AI in the response.")
+        .build()
+
+    val response: ListenableFuture<GenerateContentResponse>? = model.generateContent(content)
+
+    Futures.addCallback(response, object : FutureCallback<GenerateContentResponse> {
+        override fun onSuccess(result: GenerateContentResponse?) {
+            result?.let {
+                val responseText = it.text ?: "No response received"
+                Log.d("GeminiResponse", "Success: $responseText")
+                onResult(responseText)  // Pass the result to the callback
+            }
+        }
+
+        override fun onFailure(t: Throwable) {
+            Log.e("GeminiResponse", "Error: ${t.message}", t)
+            onResult("Failed to fetch symptoms")  // Pass an error message
+        }
+    }, mainExecutor)
+}
+
+
 
 
 @Composable
@@ -109,6 +196,18 @@ fun CustomAlertDialog(){
     }
 
 
+}
+
+fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        BitmapFactory.decodeStream(inputStream).also {
+            inputStream?.close()
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
 }
 
 @Composable
@@ -138,8 +237,12 @@ fun HomeFragment(){
         mutableStateOf(false)
     }
 
+    var uploadFromGalleryImageUri by remember{
+        mutableStateOf<Uri?>(null)
+    }
+
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) { uri->
-        imageUri=uri;
+        uploadFromGalleryImageUri=uri;
     }
 
     var coroutinesScope = rememberCoroutineScope()
@@ -158,13 +261,28 @@ fun HomeFragment(){
         mutableStateOf(true)
     }
 
-    var uploadFromGalleryImageUri by remember{
-        mutableStateOf<Uri?>(null)
+    var diseaseName by remember{
+        mutableStateOf("")
     }
+
+    var diseaseSymptoms by remember{
+        mutableStateOf("")
+    }
+
+    var diseaseRemedy by remember{
+        mutableStateOf("")
+    }
+
+    val mainExecutor = ContextCompat.getMainExecutor(context)
+
 
     if(uploadFromGalleryTest){
 
         AlertDialog(onDismissRequest = {
+            diseaseRemedy=""
+            diseaseSymptoms=""
+            diseaseName=""
+            uploadFromGalleryImageUri=null
             uploadFromGalleryTest=false
         }, confirmButton = {
 
@@ -174,7 +292,8 @@ fun HomeFragment(){
             , fontWeight = FontWeight.W500)
             }
         , text = {
-            Column {
+            Column(modifier = Modifier
+                .verticalScroll(rememberScrollState())) {
 
                 Text(text = "Uload an image from your Gallery."
                 , fontSize = 18.sp
@@ -183,23 +302,186 @@ fun HomeFragment(){
                 Spacer(modifier = Modifier
                     .height(15.dp))
 
-                if(uploadFromGalleryImageUri!=null){
+                if(uploadFromGalleryImageUri==null){
                     Image(painter = painterResource(id = R.drawable.placeholder)
                         , contentDescription = ""
                         , modifier = Modifier
                             .fillMaxWidth()
-                            .height(300.dp)
-                            .offset(y = -30.dp))
+                            .size(width = 200.dp, height = 200.dp)
+                    , contentScale = ContentScale.Crop)
                 }else{
                     Image(
-                        painter = painterResource(id = R.drawable.hive),
+                        painter = rememberAsyncImagePainter(model = uploadFromGalleryImageUri),
                         contentDescription = "",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .size(width = 200.dp, height = 200.dp) // Set a fixed size
-                        ,contentScale = ContentScale.Crop // Ensures the image is cropped to fit
+                            .size(width = 200.dp, height = 200.dp)
+                        ,contentScale = ContentScale.Crop
                     )
                 }
+
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = 20.dp)) {
+                    Button(onClick = {
+                    galleryLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                    }
+                    , modifier = Modifier
+                            .weight(1f)
+                    , colors = ButtonDefaults.buttonColors(
+                        containerColor = Purple40
+                    )) {
+                        Text(text = "Gallery"
+                            , fontSize = 18.sp
+                            , fontWeight = FontWeight.W500)
+                    }
+
+                    Spacer(modifier = Modifier
+                        .width(10.dp))
+
+                    Button(onClick = {
+
+                        if(uploadFromGalleryImageUri!=null){
+
+                            val generativeModel = GenerativeModel(
+                                modelName = Keys.MODEL_NAME,
+                                apiKey = Keys.API_KEY
+                            )
+
+                            val model = GenerativeModelFutures.from(generativeModel)
+
+                            val bitmap = uriToBitmap(context = context, uri = uploadFromGalleryImageUri!!)
+
+                            val content = bitmap?.let {
+                                Content.Builder()
+                                    .text("What is the name of the disease?, give only one word answer that is the name and no other word")
+                                    .image(it)
+                                    .build()
+                            }
+
+                            val response: ListenableFuture<GenerateContentResponse>? = content?.let {
+                                model.generateContent(
+                                    it
+                                )
+                            }
+
+                            Futures.addCallback(response, object :
+                                FutureCallback<GenerateContentResponse> {
+                                override fun onSuccess(result: GenerateContentResponse?) {
+                                    result?.let {
+                                        val textResponse = it.text ?: "No response received"
+                                        diseaseName = textResponse
+                                        getSymptoms(diseaseName,context){ symptoms->
+                                            diseaseSymptoms=symptoms
+                                        }
+                                        getRemedy(diseaseName,context){ remedy->
+                                            diseaseRemedy = remedy
+                                        }
+
+                                    }
+                                }
+
+                                override fun onFailure(t: Throwable) {
+                                    Log.e("GeminiResponse", "Error: ${t.message}", t)
+
+                                }
+                            }, mainExecutor)
+                        }
+
+                    }
+                        , modifier = Modifier
+                            .weight(1f)
+                        , colors = ButtonDefaults.buttonColors(
+                            containerColor = Purple40
+                        )) {
+                        Text(text = "Upload"
+                            , fontSize = 18.sp
+                            , fontWeight = FontWeight.W500)
+                    }
+                }
+
+                Spacer(modifier = Modifier
+                    .height(25.dp))
+
+                Column() {
+                    Text(text = "Name:"
+                    , textDecoration = TextDecoration.Underline
+                    , fontSize = 20.sp
+                    , fontWeight = FontWeight.W500
+                    , color = Color.Black)
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    if(diseaseName.isNotEmpty()){
+                        Text(
+                            text = buildAnnotatedString {
+                                append("The disease displayed in the image is ")
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append(diseaseName)
+                                }
+                            },
+                            fontSize = 17.sp,
+                            color = Color.Black
+                        )
+                    }
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Symptoms:"
+                        , textDecoration = TextDecoration.Underline
+                        , fontSize = 20.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black)
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = if(!diseaseSymptoms.isEmpty()&&!diseaseRemedy.isEmpty()&&!diseaseName.isEmpty())
+                                    "$diseaseSymptoms"
+                        else{
+                            if(diseaseName.isNotEmpty())
+                                "Fetching data..."
+                        else
+                            ""
+                    }
+                        , fontSize = 17.sp
+                        , color = Color.Black)
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Remedy:"
+                        , textDecoration = TextDecoration.Underline
+                        , fontSize = 20.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black)
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = if(!diseaseSymptoms.isEmpty()&&!diseaseRemedy.isEmpty()&&!diseaseName.isEmpty())
+                        "$diseaseRemedy"
+                    else {
+                        if(diseaseName.isNotEmpty())
+                            "Fetching data..."
+                        else
+                            ""
+                    }
+                        , fontSize = 17.sp
+                        , color = Color.Black)
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+
+
+
+                }
+
 
             }
 
@@ -412,9 +694,7 @@ fun HomeFragment(){
                 .clickable {
 
                     uploadFromGalleryTest = !uploadFromGalleryTest
-//                    galleryLauncher.launch(
-//                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-//                    )
+
 
                 }
                 , colors = CardDefaults.cardColors(
