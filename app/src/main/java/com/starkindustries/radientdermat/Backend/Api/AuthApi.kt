@@ -4,6 +4,7 @@ import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.LoginRequ
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.PatientsResponse
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.SignupRequest
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatePassword
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatedPatient
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -47,6 +48,9 @@ interface AuthApi {
     @Multipart
     @PUT("/auth/update-profile-pic/{username}")
     suspend fun updateProfilePic(@Path("username") username: String,@Part image: MultipartBody.Part,@Header("Authorization") jwtToken:String):Response<Patient>
+
+    @PUT("auth/update-password")
+    suspend fun updatePassword(@Body updatePassword: UpdatePassword,@Header("Authorization") jwtToken: String):Response<String>
 
 
 }

@@ -44,6 +44,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -75,12 +76,14 @@ import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.CircularImageProfile
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.GalleryPickerCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatePassword
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatedPatient
 import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.getFileFromUri
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
 import com.starkindustries.radientdermat.ui.theme.Purple40
+import com.starkindustries.radientdermat.ui.theme.Purple80
 import com.starkindustries.radientdermat.ui.theme.blueGradientBrush
 import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
 import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
@@ -176,6 +179,131 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
 
     val jwtToken = sharedPrefrences.getString(Keys.JWT_TOKEN,"")
 
+    var oldPassword by remember{
+        mutableStateOf("")
+    }
+
+    var newPassword by remember{
+        mutableStateOf("")
+    }
+
+    var confirmPassword by remember{
+        mutableStateOf("")
+    }
+
+
+
+    if(updatePasswordDialogState){
+        AlertDialog(onDismissRequest = {
+            updatePasswordDialogState=false
+        }, confirmButton = {
+            Button(onClick = {
+
+                var updatePassword = username?.let {
+                    UpdatePassword(
+                        username= it.trim(), password = oldPassword.trim(),newPassword=newPassword.trim()
+                    )
+                }
+
+                coRoutineScope.launch {
+                    try{
+
+                        var response = updatePassword?.let { AuthApiInstance.api.updatePassword(it, jwtToken = "Bearer $jwtToken") }
+
+                        if (response != null) {
+                            if(response.isSuccessful){
+                                Log.d("UPDATE_PASSWORD_SUCCESS",response.body().toString())
+                                updatePasswordDialogState=false
+                            }else
+                                Log.d("UPDATE_PASSWORD_ERROR",response.errorBody().toString())
+                        }
+
+                    }catch (e:Exception){
+                        e.localizedMessage?.let { Log.d("UPDATE_PASSWORD_EXCEPTION", it) }
+                    }
+                }
+
+
+
+            }
+            , colors = ButtonDefaults.buttonColors(
+                containerColor = if(!oldPassword.isEmpty()&&!newPassword.isEmpty()&&!confirmPassword.isEmpty()&&newPassword.equals(confirmPassword))
+                    Purple40
+                else
+                    Color.Gray
+            )) {
+                Text(text = "Update"
+                , fontWeight = FontWeight.W500,
+                    fontSize = 18.sp)
+            }
+        }
+        , dismissButton = {
+            TextButton(onClick = {
+                updatePasswordDialogState=false
+            }
+            , modifier = Modifier
+                    .border(2.dp, Purple40, CircleShape)) {
+                Text(text = "Cancel"
+                , fontWeight = FontWeight.W500
+                , fontSize = 18.sp)
+            }
+            }
+            , title = {
+                Text(text = "Update Password")
+            }
+        , text = {
+
+            Column {
+
+                Text(text = "Use a Strong, Unique Password – Create a password with at least 8-12 characters, including uppercase and lowercase letters, numbers, and special characters. Avoid common words or easily guessable information."
+                , fontSize = 17.sp
+                , fontWeight = FontWeight.W500)
+
+
+                Spacer(modifier = Modifier
+                    .height(15.dp))
+
+                TextField(value = oldPassword, onValueChange ={
+                    oldPassword=it
+                }
+                , label = {
+                    Text(text = "Current Password"
+                    , fontSize = 18.sp
+                    , color = Color.Black)
+                    })
+
+                Spacer(modifier = Modifier
+                    .height(15.dp))
+
+                TextField(value = newPassword, onValueChange ={
+                    newPassword=it
+                }
+                    , label = {
+                        Text(text = "New Password"
+                            , fontSize = 18.sp
+                            , color = Color.Black)
+                    })
+
+                Spacer(modifier = Modifier
+                    .height(15.dp))
+
+                TextField(value =confirmPassword, onValueChange ={
+                    confirmPassword=it
+                }
+                    , label = {
+                        Text(text = "Confirm Password"
+                            , fontSize = 18.sp
+                            , color = Color.Black)
+                    })
+
+            }
+
+
+            }
+        )
+    }
+
+
     if(editProfileDialogState){
         AlertDialog(onDismissRequest = {
             editProfileDialogState=false
@@ -233,12 +361,18 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                 }catch (e:Exception){
                     Log.d("UPDATE_PROFILE_EXCEPTION",e.localizedMessage.toString())
                 }
-            }) {
+            }
+            , colors = ButtonDefaults.buttonColors(
+                containerColor = Purple40
+            )) {
                 Text(text = "Update"
                 , fontSize = 18.sp
                 , fontWeight = FontWeight.W500)
             }
         }
+            , title = {
+                Text(text = "Edit Profile")
+            }
         , dismissButton = {
             Button(onClick = {
                 editProfileDialogState=false
@@ -247,9 +381,11 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                 containerColor = Color.Transparent
             )
             , modifier = Modifier
-                    .border(width = 1.dp, color = Purple40, shape = CircleShape)) {
+                    .border(width = 2.dp, color = Purple40, shape = CircleShape)) {
                 Text(text = "Cancle"
-                , color = Purple40)
+                , color = Purple40
+                , fontSize = 18.sp
+                , fontWeight = FontWeight.W500)
             }
             }
         , text = {
@@ -483,6 +619,9 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             .weight(1f)
                             .size(150.dp)
                             .padding(start = 5.dp)
+                            .clickable {
+                                updatePasswordDialogState = !updatePasswordDialogState
+                            }
                             , colors = CardDefaults.cardColors(
                                 contentColor = Color.White
                             )) {

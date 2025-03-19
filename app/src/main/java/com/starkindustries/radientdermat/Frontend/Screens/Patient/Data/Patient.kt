@@ -36,3 +36,9 @@ data class UpdatedPatient(
     val email:String,
 )
 
+data class UpdatePassword(
+    val username:String,
+    val password:String,
+    val newPassword:String
+)
+
