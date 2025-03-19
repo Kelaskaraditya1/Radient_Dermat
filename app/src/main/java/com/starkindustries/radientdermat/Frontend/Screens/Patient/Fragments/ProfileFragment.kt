@@ -201,14 +201,18 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
 
                 var updatePassword = username?.let {
                     UpdatePassword(
-                        username= it.trim(), password = oldPassword.trim(),newPassword=newPassword.trim()
+                         password = oldPassword.trim(),newPassword=newPassword.trim()
                     )
                 }
 
                 coRoutineScope.launch {
                     try{
 
-                        var response = updatePassword?.let { AuthApiInstance.api.updatePassword(it, jwtToken = "Bearer $jwtToken") }
+                        var response = updatePassword?.let { username?.let { it1 -> AuthApiInstance.api.updatePassword(it, jwtToken = "Bearer $jwtToken",username= it1.trim()) } }
+
+                        if (response != null) {
+                            Log.d("API_RESPONSE",response.body().toString())
+                        }
 
                         if (response != null) {
                             if(response.isSuccessful){

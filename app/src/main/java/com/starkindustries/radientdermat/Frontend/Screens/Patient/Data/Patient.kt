@@ -37,7 +37,6 @@ data class UpdatedPatient(
 )
 
 data class UpdatePassword(
-    val username:String,
     val password:String,
     val newPassword:String
 )
