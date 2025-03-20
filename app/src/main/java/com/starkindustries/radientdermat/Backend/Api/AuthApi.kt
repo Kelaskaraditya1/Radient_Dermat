@@ -52,5 +52,8 @@ interface AuthApi {
     @PUT("auth/update-password/{username}")
     suspend fun updatePassword(@Body updatePassword: UpdatePassword,@Header("Authorization") jwtToken: String,@Path("username") username: String):Response<String>
 
+    @GET("auth/get-patient/{username}")
+    suspend fun getPatient(@Path("username") username: String,@Header("Authorization") jwtToken: String):Response<Patient>
+
 
 }

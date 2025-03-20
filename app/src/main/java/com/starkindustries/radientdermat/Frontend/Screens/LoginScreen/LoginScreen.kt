@@ -268,18 +268,34 @@ fun LoginScreen(navController: NavController){
                                 var response = AuthApiInstance.api.login(loginRequest)
                                 if(response.isSuccessful){
                                     Log.d("JWT_TOKEN",response.body().toString())
-                                    Handler(Looper.getMainLooper()).post{
-                                        editor.putString(Keys.JWT_TOKEN,response.body().toString())
-                                        editor.putBoolean(Keys.LOGIN_STATUS,true)
-                                        editor.commit()
-                                        editor.apply()
-                                        navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
-                                            popUpTo(0){
-                                                inclusive=true
+                                    var jwtToken = response.body().toString()
+                                    var anotherResponse = AuthApiInstance.api.getPatient(username=username.trim(), jwtToken = "Bearer ${jwtToken}")
+                                    if(anotherResponse.isSuccessful){
+                                        var patient = anotherResponse.body()
+                                        Handler(Looper.getMainLooper()).post{
+                                            editor.putString(Keys.JWT_TOKEN,response.body().toString())
+                                            editor.putBoolean(Keys.LOGIN_STATUS,true)
+                                            if (patient != null) {
+                                                editor.putString(Keys.NAME,patient.name)
+                                            }
+                                            if (patient != null) {
+                                                editor.putString(Keys.USERNAME,patient.username)
+                                            }
+                                            editor.putString(Keys.USERNAME,username.trim())
+                                            if (patient != null) {
+                                                editor.putString(Keys.PROFILE_PIC_URL,patient.profilePicUrl)
+                                            }
+                                            editor.commit()
+                                            editor.apply()
+                                            navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+                                                popUpTo(0){
+                                                    inclusive=true
 
+                                                }
                                             }
                                         }
                                     }
+
                                 }else
                                     Log.d("API_ERROR",response.errorBody().toString())
                             }

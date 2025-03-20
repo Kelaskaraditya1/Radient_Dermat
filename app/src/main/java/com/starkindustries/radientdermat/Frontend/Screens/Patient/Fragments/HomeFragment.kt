@@ -568,16 +568,6 @@ fun HomeFragment(){
                     Spacer(modifier = Modifier
                         .height(10.dp))
 
-                    Button(onClick = {
-                        
-                    }
-                        , colors = ButtonDefaults.buttonColors(
-                            containerColor = Purple40
-                        )) {
-                        Text(text = "History"
-                            , fontWeight = FontWeight.W500
-                            , fontSize = 18.sp)
-                    }
 
                 }
 
