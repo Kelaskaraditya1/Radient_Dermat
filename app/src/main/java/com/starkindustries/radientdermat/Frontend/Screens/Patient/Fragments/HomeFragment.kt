@@ -91,9 +91,12 @@ import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import com.starkindustries.radientdermat.Backend.Instance.TestApiInstance
 import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseaseTabCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Message
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.PatientTest
+import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.getFileFromUri
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
 import com.starkindustries.radientdermat.Utility.getSymptoms
@@ -107,6 +110,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 import java.io.IOException
 
 fun getSymptoms(diseaseName: String, context: Context, onResult: (String) -> Unit) {
@@ -274,6 +281,10 @@ fun HomeFragment(){
     }
 
     val mainExecutor = ContextCompat.getMainExecutor(context)
+
+    val jwtToken = sharedPrefrences.getString(Keys.JWT_TOKEN,"")
+
+    val bearerToken = "Bearer ${jwtToken}"
 
 
     if(uploadFromGalleryTest){
@@ -479,6 +490,94 @@ fun HomeFragment(){
 
 
 
+
+                }
+
+                Spacer(modifier = Modifier
+                    .height(5.dp))
+
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                , verticalArrangement = Arrangement.Center
+                , horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Button(onClick = {
+                        if (username != null) {
+                            if(diseaseName.isNotEmpty()&&diseaseSymptoms.isNotEmpty()&&diseaseRemedy.isNotEmpty()&&username.isNotEmpty()){
+                                val patientTest = PatientTest(
+                                    diseaseImageUrl = "xyz",
+                                    diseaseName = diseaseName.trim(),
+                                    diseaseSymptoms = diseaseSymptoms.trim(),
+                                    diseaseRemedy = diseaseRemedy.trim(),
+                                    username = username.trim()
+                                )
+                                coroutinesScope.launch {
+                                    try{
+
+                                        var response = TestApiInstance.api.addToHistory(patientTest = patientTest, username = username, jwtToken = bearerToken)
+
+                                        if(response.isSuccessful){
+                                            Toast.makeText(context, "Test Added Successfully", Toast.LENGTH_SHORT).show()
+                                            var patientTest = response.body()
+                                            val file: File = getFileFromUri(uploadFromGalleryImageUri!!,context) ?: throw Exception("File conversion failed")
+
+                                            val requestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+                                            val multipartBody = MultipartBody.Part.createFormData("image", file.name, requestBody)
+
+                                            try{
+                                                coroutinesScope.launch {
+                                                    var imageUploadResponse = patientTest?.testId?.let { TestApiInstance.api.addImageToTest(image = multipartBody, jwtToken = bearerToken, testId = it) }
+                                                    if (imageUploadResponse != null) {
+                                                        if(imageUploadResponse.isSuccessful){
+                                                            diseaseRemedy=""
+                                                            diseaseSymptoms=""
+                                                            diseaseName=""
+                                                            uploadFromGalleryImageUri=null
+                                                            Log.d("IMAGE_UPLOADED _SUCCESSFULLY",
+                                                                response.body().toString()
+                                                            )
+                                                            uploadFromGalleryTest=false
+                                                        }else
+                                                            Log.d("IMAGE_UPLOAD_ERROR",response.errorBody().toString())
+                                                    }
+                                                }
+                                            }catch (e:Exception){
+                                                Log.d("UPLOAD_TEST_IMAGE_EXCEPTION",e.localizedMessage.toString())
+                                            }
+
+                                            Log.d("TEST_UPLOAD_RESPONSE",response.body().toString())
+                                        }else
+                                            Log.d("TEST_UPLOAD_ERROR",response.errorBody().toString())
+
+                                    }catch (e:IOException){
+                                        Log.d("TEST_UPLOAD_EXCEPTION",e.localizedMessage.toString())
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    , colors = ButtonDefaults.buttonColors(
+                        containerColor = Purple40
+                    )) {
+                        Text(text = "Add to History"
+                            , fontWeight = FontWeight.W500
+                            , fontSize = 18.sp)
+                    }
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Button(onClick = {
+                        
+                    }
+                        , colors = ButtonDefaults.buttonColors(
+                            containerColor = Purple40
+                        )) {
+                        Text(text = "History"
+                            , fontWeight = FontWeight.W500
+                            , fontSize = 18.sp)
+                    }
 
                 }
 
