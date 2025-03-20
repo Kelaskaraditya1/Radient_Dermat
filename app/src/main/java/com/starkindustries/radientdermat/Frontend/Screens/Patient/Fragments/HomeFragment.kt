@@ -265,7 +265,7 @@ fun HomeFragment(){
     var profilePicUrl = sharedPrefrences.getString(Keys.PROFILE_PIC_URL,"")
 
     var uploadFromGalleryTest by remember{
-        mutableStateOf(true)
+        mutableStateOf(false    )
     }
 
     var diseaseName by remember{
