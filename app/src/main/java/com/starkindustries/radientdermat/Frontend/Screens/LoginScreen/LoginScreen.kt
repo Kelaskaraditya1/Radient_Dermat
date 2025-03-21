@@ -135,6 +135,91 @@ fun LoginScreen(navController: NavController){
 
     val coroutineScope = rememberCoroutineScope()
 
+    var forgotPasswordUpdatePasswordDialogState by remember {
+        mutableStateOf(false)
+    }
+
+    var forgotPasswordPassword by remember {
+        mutableStateOf("")
+    }
+
+    if(forgotPasswordUpdatePasswordDialogState){
+        AlertDialog(onDismissRequest = {
+            forgotPasswordUpdatePasswordDialogState=false
+        }, confirmButton = {
+            Button(onClick = {
+
+                if(forgotPasswordPassword.isNotEmpty()){
+                    coroutineScope.launch {
+                        try {
+
+                            var response = AuthApiInstance.api.forgotPassword(email = forgotPasswordEmail.trim(),forgotPasswordPassword.trim())
+                            if(response.isSuccessful){
+                                var patient = response.body()
+                                Toast.makeText(context, "Password Updated Successfully!!", Toast.LENGTH_SHORT).show()
+                                Log.d("FORGOT-PASSWORD-RESPONSE",response.body().toString())
+                                forgotPasswordUpdatePasswordDialogState=false
+                            }else{
+                                Log.d("FORGOT-PASSWORD-FAILED",response.errorBody().toString())
+                                Toast.makeText(context, "Failed to update password!!", Toast.LENGTH_SHORT).show()
+                            }
+
+                        }catch (e:Exception){
+                            Log.d("FORGOT-PASSWORD-EXCEPTION",e.localizedMessage.toString())
+                        }
+                    }
+                }
+
+            }) {
+                Text(text = "Submit"
+                , fontSize = 18.sp
+                , fontWeight = FontWeight.W500)
+            }
+        }
+        , dismissButton = {
+            Button(onClick = {
+                forgotPasswordUpdatePasswordDialogState=false
+            }
+            , colors = ButtonDefaults
+                    .buttonColors(
+                        containerColor = Color.Transparent
+                    )
+            , modifier = Modifier
+                    .border(width = 2.dp, color = Purple40, shape = CircleShape)) {
+                Text(text = "Cancel"
+                , fontWeight = FontWeight.W500
+                , fontSize = 18.sp
+                , color = Purple40)
+            }
+            }
+        , title = {
+            Text(text = "Update Password")
+            }
+        , text = {
+            Column {
+                Text(text = "Use a Strong, Unique Password – Create a password with at least 8-12 characters, including uppercase and lowercase letters, numbers, and special characters. Avoid common words or easily guessable information."
+                    , fontSize = 17.sp
+                , fontWeight = FontWeight.W500
+                , color = Color.Black)
+
+                Spacer(modifier = Modifier
+                    .height(20.dp))
+
+                TextField(value = forgotPasswordPassword
+                    , onValueChange ={
+                        forgotPasswordPassword=it
+                    }
+                , label = {
+                    Text(text = "Password"
+                    , fontWeight = FontWeight.W500
+                    , fontSize = 17.sp
+                    , color = Color.Black
+                    )
+                    })
+            }
+            })
+    }
+
     if(forgotPasswordDialogState){
         AlertDialog(onDismissRequest = {
             forgotPasswordDialogState=!forgotPasswordDialogState
@@ -153,8 +238,8 @@ fun LoginScreen(navController: NavController){
                                         editor.putBoolean(Keys.ACCOUNT_VERIFICATION,true)
                                         editor.commit()
                                         editor.apply()
-                                        forgotPasswordEmail=""
                                         otp=""
+                                        forgotPasswordUpdatePasswordDialogState=true
                                         emailSent=false
                                         forgotPasswordDialogState=false
                                     }else{

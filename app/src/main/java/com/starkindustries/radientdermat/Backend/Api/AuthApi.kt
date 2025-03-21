@@ -62,5 +62,8 @@ interface AuthApi {
     @GET("auth/verify-email/{otp}")
     suspend fun verifyEmail(@Path("otp") otp:Int):Response<ResponseBody>
 
+    @PUT("auth/forgot-password/{email}/{password}")
+    suspend fun forgotPassword(@Path("email") email: String,@Path("password") password:String):Response<Patient>
+
 
 }
