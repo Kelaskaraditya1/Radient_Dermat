@@ -8,6 +8,7 @@ import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatePas
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatedPatient
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -50,10 +51,16 @@ interface AuthApi {
     suspend fun updateProfilePic(@Path("username") username: String,@Part image: MultipartBody.Part,@Header("Authorization") jwtToken:String):Response<Patient>
 
     @PUT("auth/update-password/{username}")
-    suspend fun updatePassword(@Body updatePassword: UpdatePassword,@Header("Authorization") jwtToken: String,@Path("username") username: String):Response<String>
+    suspend fun updatePassword(@Body updatePassword: UpdatePassword,@Header("Authorization") jwtToken: String,@Path("username") username: String):Response<Patient>
 
     @GET("auth/get-patient/{username}")
     suspend fun getPatient(@Path("username") username: String,@Header("Authorization") jwtToken: String):Response<Patient>
+
+    @GET("auth/send-email/{email}")
+    suspend fun sendEmail(@Path("email") email:String):Response<ResponseBody>
+
+    @GET("auth/verify-email/{otp}")
+    suspend fun verifyEmail(@Path("otp") otp:Int):Response<ResponseBody>
 
 
 }

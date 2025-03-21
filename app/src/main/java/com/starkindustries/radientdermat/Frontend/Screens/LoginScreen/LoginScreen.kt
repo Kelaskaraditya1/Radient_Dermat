@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.Display.Mode
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -89,6 +90,7 @@ import com.starkindustries.radientdermat.Frontend.Screens.Compose.Authentication
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.SwitchScreenCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.LoginRequest
 import com.starkindustries.radientdermat.ui.theme.BlueBackground
+import com.starkindustries.radientdermat.ui.theme.Purple40
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -109,6 +111,22 @@ fun LoginScreen(navController: NavController){
         mutableStateOf(false)
     }
 
+    var forgotPasswordDialogState by remember{
+        mutableStateOf(false)
+    }
+
+    var forgotPasswordEmail by remember{
+        mutableStateOf("")
+    }
+
+    var emailSent by remember {
+        mutableStateOf(false)
+    }
+
+    var otp by remember {
+        mutableStateOf("")
+    }
+
     var context = LocalContext.current.applicationContext
 
     var sharedPrefrences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME,Context.MODE_PRIVATE)
@@ -116,6 +134,157 @@ fun LoginScreen(navController: NavController){
 
 
     val coroutineScope = rememberCoroutineScope()
+
+    if(forgotPasswordDialogState){
+        AlertDialog(onDismissRequest = {
+            forgotPasswordDialogState=!forgotPasswordDialogState
+        }
+            , confirmButton = {
+                if(emailSent){
+                    Button(onClick = {
+                        if(otp.isNotEmpty()){
+                            try{
+
+                                coroutineScope.launch {
+                                    var response = AuthApiInstance.api.verifyEmail(Integer.parseInt(otp))
+                                    if(response.isSuccessful){
+                                        Toast.makeText(context, "Account verified successfully!!", Toast.LENGTH_SHORT).show()
+                                        Log.d("VERIFY_EMAIL_RESPONSE",response.body().toString())
+                                        editor.putBoolean(Keys.ACCOUNT_VERIFICATION,true)
+                                        editor.commit()
+                                        editor.apply()
+                                        forgotPasswordEmail=""
+                                        otp=""
+                                        emailSent=false
+                                        forgotPasswordDialogState=false
+                                    }else{
+                                        Log.d("VERIFY_EMAIL_FAILED",response.errorBody().toString())
+                                        Toast.makeText(context, "Failed to verify account,Enter the correct Otp", Toast.LENGTH_SHORT).show()
+                                    }
+
+                                }
+
+                            }catch (e:Exception){
+                                Log.d("EMAIL_VERIFICATION_EXCEPTION", e.localizedMessage.toString())
+                            }
+                        }
+                    }
+                        , colors = ButtonDefaults
+                            .buttonColors(
+                                containerColor = Purple40
+                            )) {
+                        Text(text = "Verify-Otp"
+                            , fontSize = 18.sp
+                            , fontWeight = FontWeight.W500)
+                    }
+                }
+
+            }
+            , dismissButton = {
+                Button(onClick = {
+                    forgotPasswordEmail=""
+                    otp=""
+                    emailSent=false
+                    forgotPasswordDialogState=false
+                }
+                , colors = ButtonDefaults
+                        .buttonColors(
+                            containerColor = Color.Transparent
+                        )
+                , modifier = Modifier
+                        .border(width = 2.dp, color = Purple40, shape = CircleShape)) {
+                    Text(text = "Cancel"
+                    , fontSize = 18.sp
+                    , fontWeight = FontWeight.W500
+                    , color = Purple40)
+                }
+            }
+            , title = {
+                Text(text = "Forgot Password")
+            }
+            , text = {
+                Column {
+
+                    Text(text = "Enter the valid email which has been used while registering , an otp will be sent to the email for account verification.Enter the correct otp for account verification."
+                    , fontSize = 18.sp
+                    , fontWeight = FontWeight.W500)
+
+                    Spacer(modifier = Modifier
+                        .height(15.dp))
+
+                    TextField(value = forgotPasswordEmail
+                        , onValueChange ={
+                            forgotPasswordEmail=it
+                        }
+                    , label = {
+                        Text(text = "Email"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black)
+                        })
+
+                    Spacer(modifier = Modifier
+                        .height(15.dp))
+
+                    Box(modifier =Modifier
+                        .fillMaxWidth()
+                    , contentAlignment = Alignment.Center){
+                        Button(onClick = {
+                            if (forgotPasswordEmail.isNotEmpty()) {
+                                try {
+                                    coroutineScope.launch {
+                                        val response = AuthApiInstance.api.sendEmail(forgotPasswordEmail)
+                                        if (response.isSuccessful) {
+                                            val responseBody = response.body()?.string() // Read the response as a raw string
+                                            Toast.makeText(context, "Email Sent Successfully!!", Toast.LENGTH_SHORT).show()
+                                            Log.d("EMAIL_SENT_SUCCESSFULLY", responseBody ?: "Null response")
+
+                                            Handler(Looper.getMainLooper()).post {
+                                                emailSent = true
+                                            }
+                                        } else {
+                                            Toast.makeText(context, "Failed to sent Email!! try again later.", Toast.LENGTH_SHORT).show()
+                                            Log.d("EMAIL_SENT_FAILED", response.errorBody()?.string() ?: "Unknown error")
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    Log.d("SENT_EMAIL_EXCEPTION", e.localizedMessage.toString())
+                                }
+                            }
+
+                        }
+                        , colors = ButtonDefaults
+                                .buttonColors(
+                                    containerColor = Purple40
+                                )) {
+                            Text(text = "Send Email"
+                                , fontWeight = FontWeight.W500
+                                , fontSize = 18.sp)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier
+                        .height(50.dp))
+
+                    if(emailSent){
+                        TextField(value =otp ,
+                            onValueChange ={
+                                otp=it
+                            }
+                            , label = {
+                                Text(text = "OTP"
+                                    , fontSize = 18.sp
+                                    , fontWeight = FontWeight.W500
+                                    , color = Color.Black)
+                            }
+                        )
+
+                    }
+
+                }
+            }
+        )
+    }
 
 
     Column(horizontalAlignment = Alignment.CenterHorizontally
@@ -246,6 +415,9 @@ fun LoginScreen(navController: NavController){
                     , fontSize = 16.sp
                     , modifier = Modifier
                             .fillMaxWidth()
+                            .clickable {
+                                forgotPasswordDialogState = !forgotPasswordDialogState
+                            }
                     , textAlign = TextAlign.End
                     , textDecoration = TextDecoration.Underline)
                 }
@@ -285,6 +457,7 @@ fun LoginScreen(navController: NavController){
                                             if (patient != null) {
                                                 editor.putString(Keys.PROFILE_PIC_URL,patient.profilePicUrl)
                                             }
+                                            editor.putString(Keys.PASSWORD,password.trim())
                                             editor.commit()
                                             editor.apply()
                                             navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){

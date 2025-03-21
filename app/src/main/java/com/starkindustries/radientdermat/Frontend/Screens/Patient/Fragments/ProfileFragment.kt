@@ -191,6 +191,8 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
         mutableStateOf("")
     }
 
+    var currrentPassword = sharedPrefrences.getString(Keys.PASSWORD,"")
+
 
 
     if(updatePasswordDialogState){
@@ -211,12 +213,10 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                         var response = updatePassword?.let { username?.let { it1 -> AuthApiInstance.api.updatePassword(it, jwtToken = "Bearer $jwtToken",username= it1.trim()) } }
 
                         if (response != null) {
-                            Log.d("API_RESPONSE",response.body().toString())
-                        }
-
-                        if (response != null) {
                             if(response.isSuccessful){
+                                var patient = response.body()
                                 Log.d("UPDATE_PASSWORD_SUCCESS",response.body().toString())
+                                editor.putString(Keys.PASSWORD,newPassword.trim())
                                 updatePasswordDialogState=false
                             }else
                                 Log.d("UPDATE_PASSWORD_ERROR",response.errorBody().toString())
@@ -231,7 +231,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
 
             }
             , colors = ButtonDefaults.buttonColors(
-                containerColor = if(!oldPassword.isEmpty()&&!newPassword.isEmpty()&&!confirmPassword.isEmpty()&&newPassword.equals(confirmPassword))
+                containerColor = if(!oldPassword.isEmpty()&&!newPassword.isEmpty()&&!confirmPassword.isEmpty()&&newPassword.equals(confirmPassword)&&oldPassword.equals(currrentPassword))
                     Purple40
                 else
                     Color.Gray
@@ -260,6 +260,13 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
             Column {
 
                 Text(text = "Use a Strong, Unique Password – Create a password with at least 8-12 characters, including uppercase and lowercase letters, numbers, and special characters. Avoid common words or easily guessable information."
+                , fontSize = 17.sp
+                , fontWeight = FontWeight.W500)
+
+                Spacer(modifier = Modifier
+                    .height(5.dp))
+                
+                Text(text = "We strongly recommend logging in again after changing your password to continue enjoying the benefits of our services."
                 , fontSize = 17.sp
                 , fontWeight = FontWeight.W500)
 
@@ -329,10 +336,6 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                                 var patient = response.body()
                                 Log.d("UPDATED_PROFILE_SUCCESSFULL", response.body().toString())
                                 if (patient != null) {
-                                    editor.putString(Keys.NAME,patient.name)
-                                    editor.putString(Keys.EMAIL,patient.email)
-                                    editor.commit()
-                                    editor.apply()
 
                                     updatedPhotoUri?.let {
                                         if (username != null) {
@@ -343,6 +346,8 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                                                 uploadProfilePicture(context=context, imageUri = updatedPhotoUri!!, username=username, jwtToken = "$jwtToken"){ patient->
 
                                                     if(patient!=null){
+                                                        editor.putString(Keys.NAME,patient.name)
+                                                        editor.putString(Keys.EMAIL,patient.email)
                                                         editor.putString(Keys.PROFILE_PIC_URL,patient.profilePicUrl)
                                                         editor.commit()
                                                         editor.apply()
