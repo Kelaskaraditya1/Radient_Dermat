@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Space
 import android.widget.Toast
+import androidx.annotation.IntegerRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -240,6 +241,9 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
         mutableStateOf<MedicalHistory?>(null)
     }
 
+
+
+
     LaunchedEffect(Unit) {
 
         var bearerToken = "Bearer $jwtToken"
@@ -249,6 +253,9 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                 var response = AuthApiInstance.api.getMedicalHistory(username = username.trim(),jwtToken=bearerToken)
                 if(response.isSuccessful){
                     medicalHistory = response.body()
+                    editor.putString(Keys.MEDICAL_HISTORY_ID, medicalHistory?.medicalHistoryId.toString())
+                    editor.commit()
+                    editor.apply()
                     Log.d("MEDICAL_HISTORY_SUCCESS",medicalHistory.toString())
                 }else
                     Log.d("MEDICAL_HISTORY_ERROR",response.errorBody().toString())
@@ -267,21 +274,105 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
             medicalHistoryDialogstate=false
         }
             , confirmButton = {
-                Button(onClick = {
-                    medicalHistoryUpdateState=!medicalHistoryUpdateState
+
+                if(medicalHistoryUpdateState){
+                    Button(onClick = {
+                        coRoutineScope.launch {
+                            try{
+
+                                var medicalHistoryId =
+                                    sharedPrefrences.getString(Keys.MEDICAL_HISTORY_ID,"")
+                                        ?.let { Integer.parseInt(it) }
+
+                                var medicalHistoryObject = MedicalHistory(
+                                    height= height.trim(),
+                                    weight = weight.trim(),
+                                    gender = gender.trim(),
+                                    chronicIllness = chronicIllness.trim(),
+                                    pastSurgeries = pastSurgeries.trim(),
+                                    infections = infections.trim(),
+                                    allergies = allergies.trim(),
+                                    allergicMedications = allergicMedications.trim(),
+                                    username = username.toString()
+                                )
+
+                                var bearerToken = "Bearer $jwtToken"
+
+                                var response = medicalHistoryId?.let { AuthApiInstance.api.updateMedicalHistory(medicalHistory = medicalHistoryObject, medicalHistoryId= it,jwtToken=bearerToken) }
+
+                                if (response != null) {
+                                    if(response.isSuccessful){
+                                        Log.d("MEDICAL_HISTORY_SUCCESS",response.body().toString())
+                                        medicalHistory=response.body()
+                                        medicalHistoryUpdateState=false
+                                    }else
+                                        Log.d("MEDICAL_HISTORY_ERROR",response.errorBody().toString())
+                                }
+
+                            }catch (e:Exception){
+                                Log.d("MEDICAL_HISTORY_EXCEPTION",e.message.toString())
+                            }
+                        }
+                    }
+                        , colors = ButtonDefaults
+                            .buttonColors(
+                                containerColor = Purple40
+                            )) {
+                        Text(text = "Update History"
+                            , fontSize = 17.sp
+                            , fontWeight = FontWeight.W500)
+                    }
+                }else{
+                    Button(onClick = {
+
+                        coRoutineScope.launch {
+                            try{
+
+                                var medicalHistoryObject = MedicalHistory(
+                                    height= height.trim(),
+                                    weight = weight.trim(),
+                                    gender = gender.trim(),
+                                    chronicIllness = chronicIllness.trim(),
+                                    pastSurgeries = pastSurgeries.trim(),
+                                    infections = infections.trim(),
+                                    allergies = allergies.trim(),
+                                    allergicMedications = allergicMedications.trim(),
+                                    username = username.toString()
+                                )
+
+                                var bearerToken = "Bearer $jwtToken"
+
+                                var response = username?.let { AuthApiInstance.api.addMedicalHistory(medicalHistory = medicalHistoryObject, username = it.trim(),jwtToken=bearerToken) }
+
+                                if (response != null) {
+                                    if(response.isSuccessful){
+                                        Log.d("MEDICAL_HISTORY_SUCCESS",response.body().toString())
+                                        medicalHistory=response.body()
+                                    }else
+                                        Log.d("MEDICAL_HISTORY_ERROR",response.errorBody().toString())
+                                }
+
+                            }catch (e:Exception){
+                                Log.d("MEDICAL_HISTORY_EXCEPTION",e.message.toString())
+                            }
+                        }
+
+                    }
+                        , colors = ButtonDefaults
+                            .buttonColors(
+                                containerColor = Purple40
+                            )) {
+                        Text(text = "Add History"
+                            , fontSize = 17.sp
+                            , fontWeight = FontWeight.W500)
+                    }
                 }
-                , colors = ButtonDefaults
-                        .buttonColors(
-                            containerColor = Purple40
-                        )) {
-                    Text(text = "Update"
-                    , fontSize = 17.sp
-                    , fontWeight = FontWeight.W500)
-                }
+
             }
         , dismissButton = {
             Button(onClick = {
-
+                medicalHistoryDialogstate=false
+                medicalHistoryUpdateState=false
             }
                 , colors = ButtonDefaults
                     .buttonColors(
@@ -325,7 +416,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             }
                         )
                     }else{
-                        Text(text = "165 cm"
+                        Text(text = medicalHistory!!.height+" cm"
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
@@ -352,13 +443,13 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                                 weight=it
                             }
                             , label = {
-                                Text(text = "Weight"
+                                Text(text =  "Weight"
                                     , fontSize = 16.sp
                                     , color = Color.Black)
                             }
                         )
                     }else{
-                        Text(text = "70 kg"
+                        Text(text =  medicalHistory!!.weight+" kg"
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
@@ -390,7 +481,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             }
                         )
                     }else{
-                        Text(text = "M"
+                        Text(text = medicalHistory!!.gender
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
@@ -421,7 +512,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             }
                         )
                     }else{
-                        Text(text = "Sulpha allergic"
+                        Text(text =  medicalHistory!!.chronicIllness
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
@@ -453,7 +544,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             }
                         )
                     }else{
-                        Text(text = "Appendectomy"
+                        Text(text =  medicalHistory!!.pastSurgeries
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
@@ -485,7 +576,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             }
                         )
                     }else{
-                        Text(text = "Suplha"
+                        Text(text =  medicalHistory!!.infections
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
@@ -517,7 +608,7 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             }
                         )
                     }else{
-                        Text(text = "Pollen, Dust"
+                        Text(text =  medicalHistory!!.allergies
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
@@ -548,11 +639,33 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             }
                         )
                     }else{
-                        Text(text = "Penicillin"
+                        Text(text =  medicalHistory!!.allergicMedications
                             , fontSize = 16.sp
                             , color = Color.Black
                         )
                     }
+
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        , contentAlignment = Alignment.Center){
+
+                        if(!medicalHistoryUpdateState){
+                            Button(onClick = {
+                                medicalHistoryUpdateState=true
+                            }
+                                , colors = ButtonDefaults
+                                    .buttonColors(
+                                        containerColor = Purple40
+                                    )) {
+                                Text(text = "Update"
+                                    , fontSize = 17.sp
+                                    , fontWeight = FontWeight.W500)
+                            }
+                        }
+
+
+                    }
+
 
                 }
             }else{

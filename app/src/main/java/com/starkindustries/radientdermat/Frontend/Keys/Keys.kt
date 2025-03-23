@@ -22,6 +22,7 @@ class Keys {
         const val MODEL_NAME="gemini-1.5-pro"
         const val API_KEY="AIzaSyCs_O4-ku2iBKCDASwdGFmvEugTWQTPgAU"
         const val ACCOUNT_VERIFICATION="ACCOUNT_VERIFICATION"
+        const val MEDICAL_HISTORY_ID="MEDICAL_HISTORY_ID"
 
 
     }
