@@ -1,6 +1,7 @@
 package com.starkindustries.radientdermat.Backend.Api
 
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.LoginRequest
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.MedicalHistory
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.PatientsResponse
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.SignupRequest
@@ -65,5 +66,13 @@ interface AuthApi {
     @PUT("auth/forgot-password/{email}/{password}")
     suspend fun forgotPassword(@Path("email") email: String,@Path("password") password:String):Response<Patient>
 
+    @GET("medical-history/get-medical-history/{username}")
+    suspend fun getMedicalHistory(@Path("username") username: String,@Header("Authorization") jwtToken: String):Response<MedicalHistory>
+
+    @PUT("medical-history/update-medical-history/{medicalHistoryId}")
+    suspend fun updateMedicalHistory(@Body medicalHistory: MedicalHistory,@Path("medicalHistoryId") medicalHistoryId:Int,@Header("Authorization") jwtToken: String):Response<MedicalHistory>
+
+    @POST("medical-history/add-medical-history/{username}")
+    suspend fun addMedicalHistory(@Body medicalHistory: MedicalHistory,@Path("username") username: String,@Header("Authorization") jwtToken: String):Response<MedicalHistory>
 
 }

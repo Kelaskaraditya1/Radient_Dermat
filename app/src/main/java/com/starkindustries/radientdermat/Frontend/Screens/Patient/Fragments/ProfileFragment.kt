@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +77,7 @@ import com.starkindustries.radientdermat.Frontend.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.CircularImageProfile
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.GalleryPickerCompose
+import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.MedicalHistory
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatePassword
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatedPatient
@@ -193,7 +196,583 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
 
     var currrentPassword = sharedPrefrences.getString(Keys.PASSWORD,"")
 
+    var medicalHistoryDialogstate by remember{
+        mutableStateOf(false)
+    }
+    
+    var medicalHistoryUpdateState by remember {
+        mutableStateOf(false)
+    }
+    
+    var height by remember{
+        mutableStateOf("")
+    }
 
+    var weight by remember{
+        mutableStateOf("")
+    }
+
+    var gender by remember{
+        mutableStateOf("")
+    }
+
+    var chronicIllness by remember{
+        mutableStateOf("")
+    }
+
+    var pastSurgeries by remember{
+        mutableStateOf("")
+    }
+
+    var infections by remember{
+        mutableStateOf("")
+    }
+
+    var allergies by remember{
+        mutableStateOf("")
+    }
+
+    var allergicMedications by remember{
+        mutableStateOf("")
+    }
+
+    var medicalHistory by remember{
+        mutableStateOf<MedicalHistory?>(null)
+    }
+
+    LaunchedEffect(Unit) {
+
+        var bearerToken = "Bearer $jwtToken"
+
+        try{
+            username?.let {
+                var response = AuthApiInstance.api.getMedicalHistory(username = username.trim(),jwtToken=bearerToken)
+                if(response.isSuccessful){
+                    medicalHistory = response.body()
+                    Log.d("MEDICAL_HISTORY_SUCCESS",medicalHistory.toString())
+                }else
+                    Log.d("MEDICAL_HISTORY_ERROR",response.errorBody().toString())
+            }
+        }catch (e:Exception){
+            Log.d("MEDICAL_HISTORY_EXCEPTION",e.message.toString())
+        }
+
+    }
+
+
+
+
+    if(medicalHistoryDialogstate){
+        AlertDialog(onDismissRequest = {
+            medicalHistoryDialogstate=false
+        }
+            , confirmButton = {
+                Button(onClick = {
+                    medicalHistoryUpdateState=!medicalHistoryUpdateState
+                }
+                , colors = ButtonDefaults
+                        .buttonColors(
+                            containerColor = Purple40
+                        )) {
+                    Text(text = "Update"
+                    , fontSize = 17.sp
+                    , fontWeight = FontWeight.W500)
+                }
+            }
+        , dismissButton = {
+            Button(onClick = {
+
+            }
+                , colors = ButtonDefaults
+                    .buttonColors(
+                        containerColor = Color.Transparent
+                    )
+            , modifier = Modifier
+                    .border(width = 2.dp, color = Purple40, shape = CircleShape)) {
+                Text(text = "Cancel"
+                , fontSize = 17.sp
+                , fontWeight = FontWeight.W500
+                , color = Purple40)
+            }
+            }
+        , title = {
+            Text(text = "Medical History")
+            }
+        , text = {
+
+            if(medicalHistory!=null){
+                Column(modifier = Modifier
+                    .verticalScroll(rememberScrollState())) {
+
+                    Text(text = "Height:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = height
+                            , onValueChange ={
+                                height=it
+                            }
+                            , label = {
+                                Text(text = "Height"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "165 cm"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+
+
+                    Text(text = "Weight:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = weight
+                            , onValueChange ={
+                                weight=it
+                            }
+                            , label = {
+                                Text(text = "Weight"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "70 kg"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Gender:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = gender
+                            , onValueChange ={
+                                gender=it
+                            }
+                            , label = {
+                                Text(text = "Gender"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "M"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Chronic Illness:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = chronicIllness
+                            , onValueChange ={
+                                chronicIllness=it
+                            }
+                            , label = {
+                                Text(text = "Chronic Illness"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "Sulpha allergic"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Past Surgeries:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = pastSurgeries
+                            , onValueChange ={
+                                pastSurgeries=it
+                            }
+                            , label = {
+                                Text(text = "Past Surgeries"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "Appendectomy"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Infections:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = infections
+                            , onValueChange ={
+                                infections=it
+                            }
+                            , label = {
+                                Text(text = "Infections"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "Suplha"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Allergies:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = allergies
+                            , onValueChange ={
+                                allergies=it
+                            }
+                            , label = {
+                                Text(text = "Allergies"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "Pollen, Dust"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Allergic Medications:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    if(medicalHistoryUpdateState){
+                        TextField(value = allergicMedications
+                            , onValueChange ={
+                                allergicMedications=it
+                            }
+                            , label = {
+                                Text(text = "Allergic Medications"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+                    }else{
+                        Text(text = "Penicillin"
+                            , fontSize = 16.sp
+                            , color = Color.Black
+                        )
+                    }
+
+                }
+            }else{
+                Column(modifier = Modifier
+                    .verticalScroll(rememberScrollState())) {
+
+                    Text(text = "Height:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+
+                        TextField(value = height
+                            , onValueChange ={
+                                height=it
+                            }
+                            , label = {
+                                Text(text = "Height"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+
+
+                    Text(text = "Weight:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    
+                        TextField(value = weight
+                            , onValueChange ={
+                                weight=it
+                            }
+                            , label = {
+                                Text(text = "Weight"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Gender:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+
+                        TextField(value = gender
+                            , onValueChange ={
+                                gender=it
+                            }
+                            , label = {
+                                Text(text = "Gender"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Chronic Illness:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                                            TextField(value = chronicIllness
+                            , onValueChange ={
+                                chronicIllness=it
+                            }
+                            , label = {
+                                Text(text = "Chronic Illness"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Past Surgeries:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+
+                        TextField(value = pastSurgeries
+                            , onValueChange ={
+                                pastSurgeries=it
+                            }
+                            , label = {
+                                Text(text = "Past Surgeries"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Infections:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+
+                        TextField(value = infections
+                            , onValueChange ={
+                                infections=it
+                            }
+                            , label = {
+                                Text(text = "Infections"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Allergies:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+                    TextField(value = allergies
+                            , onValueChange ={
+                                allergies=it
+                            }
+                            , label = {
+                                Text(text = "Allergies"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+
+                    Spacer(modifier = Modifier
+                        .height(10.dp))
+
+                    Text(text = "Allergic Medications:"
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black
+                        , textDecoration = TextDecoration.Underline)
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp))
+
+
+                        TextField(value = allergicMedications
+                            , onValueChange ={
+                                allergicMedications=it
+                            }
+                            , label = {
+                                Text(text = "Allergic Medications"
+                                    , fontSize = 16.sp
+                                    , color = Color.Black)
+                            }
+                        )
+
+
+                }
+            }
+
+
+
+            }
+        , modifier = Modifier
+                .height(500.dp))
+    }
 
     if(updatePasswordDialogState){
         AlertDialog(onDismissRequest = {
@@ -541,6 +1120,9 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                             .weight(1f)
                             .size(150.dp)
                             .padding(end = 5.dp)
+                            .clickable {
+                                medicalHistoryDialogstate = !medicalHistoryDialogstate
+                            }
                             , colors = CardDefaults.cardColors(
                                 contentColor = Color.White
                             )) {
