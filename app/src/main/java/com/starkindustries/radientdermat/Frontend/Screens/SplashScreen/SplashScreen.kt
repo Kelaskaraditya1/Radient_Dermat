@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Backend.Instance.AuthApiInstance
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
 import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.SignUpScreen

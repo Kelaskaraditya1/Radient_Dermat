@@ -49,7 +49,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.CaptureFragment
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.HomeFragment

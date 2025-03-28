@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.starkindustries.radientdermat.Backend.Instance.TestApiInstance
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.PatientTest
 import com.starkindustries.radientdermat.R

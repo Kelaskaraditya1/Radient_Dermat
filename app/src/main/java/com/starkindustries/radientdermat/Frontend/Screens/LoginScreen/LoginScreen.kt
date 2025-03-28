@@ -84,7 +84,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.starkindustries.radientdermat.Backend.Instance.AuthApiInstance
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.AuthenticationLogoTextCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.SwitchScreenCompose
@@ -142,6 +142,18 @@ fun LoginScreen(navController: NavController){
     var forgotPasswordPassword by remember {
         mutableStateOf("")
     }
+
+    var isUsernameValid by remember{
+        mutableStateOf(true)
+    }
+
+    var isPasswordValid by remember{
+        mutableStateOf(true)
+    }
+
+    val passwordPattern = Regex("^(?=.*[A-Z])(?=.*[@#\$%^&+=!])(?=\\S+$).{9,}$")
+
+
 
     if(forgotPasswordUpdatePasswordDialogState){
         AlertDialog(onDismissRequest = {
@@ -432,14 +444,23 @@ fun LoginScreen(navController: NavController){
                 TextField(value = username
                     , onValueChange = {
                         username=it
+                        isUsernameValid=it.isNotEmpty()
                     }
                 , shape = CircleShape
                 , label = {
-                    Text(text = "Username"
-                    , fontSize = 18.sp
-                    , style = MaterialTheme.typography.titleMedium
-                    , color = Color.Black
-                    )
+                        if(isUsernameValid){
+                            Text(text = "Username"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Black
+                            )
+                        }else{
+                            Text(text = "Username should not be empty!!"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Red
+                            )
+                        }
                 }
                     , textStyle = TextStyle(fontSize = 18.sp)
                 , modifier = Modifier
@@ -457,15 +478,25 @@ fun LoginScreen(navController: NavController){
 
                 TextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { password = it
+                                    isPasswordValid = passwordPattern.matches(it)},
                     shape = CircleShape,
                     label = {
-                        Text(
-                            text = "Password",
-                            fontSize = 18.sp,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Black
-                        )
+                        if(!isPasswordValid){
+
+                            Text(text = "Password must be >8 chars, 1 uppercase, 1 special char!!"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Red
+                            )
+
+                        }else{
+                            Text(text = "Password"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Black
+                            )
+                        }
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -529,6 +560,7 @@ fun LoginScreen(navController: NavController){
                                     var anotherResponse = AuthApiInstance.api.getPatient(username=username.trim(), jwtToken = "Bearer ${jwtToken}")
                                     if(anotherResponse.isSuccessful){
                                         var patient = anotherResponse.body()
+                                        Toast.makeText(context, "Welcome back "+username.trim()+" !!", Toast.LENGTH_SHORT).show()
                                         Handler(Looper.getMainLooper()).post{
                                             editor.putString(Keys.JWT_TOKEN,response.body().toString())
                                             editor.putBoolean(Keys.LOGIN_STATUS,true)
@@ -554,8 +586,11 @@ fun LoginScreen(navController: NavController){
                                         }
                                     }
 
-                                }else
+                                }else{
                                     Log.d("API_ERROR",response.errorBody().toString())
+                                    Toast.makeText(context, "Invalid Username or Password", Toast.LENGTH_SHORT).show()
+                                }
+
                             }
                         }catch (e:Exception){
                             Log.d("LOGIN_EXCEPTION",e.localizedMessage.toString())

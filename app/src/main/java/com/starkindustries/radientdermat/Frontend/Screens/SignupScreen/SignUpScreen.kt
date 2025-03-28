@@ -9,6 +9,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,7 +57,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
 import com.starkindustries.radientdermat.Backend.Api.AuthApi
 import com.starkindustries.radientdermat.Backend.Instance.AuthApiInstance
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.AuthenticationLogoTextCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.GalleryPickerCompose
@@ -154,6 +155,24 @@ fun SignUpScreen(navController: NavController){
     var sharedPrefrences = context.getSharedPreferences(Keys.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
     var editor = sharedPrefrences.edit()
 
+    var isEmailValid by remember{
+        mutableStateOf(true)
+    }
+
+    val emailPattern = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]{2,3}$")
+
+    var isNameValid by remember { mutableStateOf(true) }
+
+    var isUsernameValid by remember{
+        mutableStateOf(true)
+    }
+
+    var isPasswordValid by remember {
+        mutableStateOf(true)
+    }
+
+    val passwordPattern = Regex("^(?=.*[A-Z])(?=.*[@#\$%^&+=!])(?=\\S+$).{9,}$")
+
     Column(verticalArrangement = Arrangement.Center
     , modifier = Modifier
             .fillMaxSize()) {
@@ -221,14 +240,25 @@ fun SignUpScreen(navController: NavController){
                 TextField(value = name
                     , onValueChange = {
                         name=it
+                        isNameValid=it.isNotEmpty()
                     }
                     , shape = CircleShape
+
                     , label = {
-                        Text(text = "Name"
-                            , fontSize = 18.sp
-                            , style = MaterialTheme.typography.titleMedium
-                            , color = Color.Black
-                        )
+                        if(isNameValid){
+                            Text(text = "Name"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Black
+                            )
+                        }else{
+                            Text(text = "Name should not be empty!!"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Red
+                            )
+                        }
+
                     }
                     , textStyle = TextStyle(fontSize = 18.sp)
                     , modifier = Modifier
@@ -246,14 +276,25 @@ fun SignUpScreen(navController: NavController){
                 TextField(value = email
                     , onValueChange = {
                         email=it
+                        isEmailValid = email.matches(emailPattern)
                     }
                     , shape = CircleShape
+                    , isError = !isEmailValid
                     , label = {
-                        Text(text = "Email"
-                            , fontSize = 18.sp
-                            , style = MaterialTheme.typography.titleMedium
-                            , color = Color.Black
-                        )
+                        if(!isEmailValid){
+                            Text(text = "Invalid Email Format"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Red
+                            )
+                    }else{
+                            Text(text = "Email"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Black
+                            )
+                        }
+
                     }
                     , textStyle = TextStyle(fontSize = 18.sp)
                     , modifier = Modifier
@@ -273,14 +314,23 @@ fun SignUpScreen(navController: NavController){
                 TextField(value = username
                     , onValueChange = {
                         username=it
+                        isUsernameValid=it.isNotEmpty()
                     }
                     , shape = CircleShape
                     , label = {
-                        Text(text = "Username"
-                            , fontSize = 18.sp
-                            , style = MaterialTheme.typography.titleMedium
-                            , color = Color.Black
-                        )
+                        if(isUsernameValid){
+                            Text(text = "Username"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Black
+                            )
+                        }else{
+                            Text(text = "Enter proper Username!!"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Red
+                            )
+                        }
                     }
                     , textStyle = TextStyle(fontSize = 18.sp)
                     , modifier = Modifier
@@ -298,15 +348,27 @@ fun SignUpScreen(navController: NavController){
 
                 TextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { password = it
+                        isPasswordValid = passwordPattern.matches(it)
+                                    },
                     shape = CircleShape,
                     label = {
-                        Text(
-                            text = "Password",
-                            fontSize = 18.sp,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Black
-                        )
+                        if(!isPasswordValid){
+
+                            Text(text = "Password must be >8 chars, 1 uppercase, 1 special char!!"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Red
+                            )
+
+
+                        }else{
+                            Text(text = "Password"
+                                , fontSize = 18.sp
+                                , style = MaterialTheme.typography.titleMedium
+                                , color = Color.Black
+                            )
+                        }
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -338,16 +400,17 @@ fun SignUpScreen(navController: NavController){
 
                     Button(onClick = {
 
-                        coroutineScope.launch {
+                        if(profilePicUri!=null){
+                            coroutineScope.launch {
 
-                            val patients = Patient(
-                                name = name.toString().trim(),
-                                username = username.toString().trim(),
-                                email = email.toString().trim(),
-                                password = password.toString().trim(),
-                                profilePicUrl = "",
-                                medicalHistory = ""
-                            )
+                                val patients = Patient(
+                                    name = name.toString().trim(),
+                                    username = username.toString().trim(),
+                                    email = email.toString().trim(),
+                                    password = password.toString().trim(),
+                                    profilePicUrl = "",
+                                    medicalHistory = ""
+                                )
 
 //// Convert Patient object to JSON string
 //                            val jsonString = Gson().toJson(patients)
@@ -379,48 +442,52 @@ fun SignUpScreen(navController: NavController){
 //                                }
 //                            })
 
-                            try{
-                                var response = AuthApiInstance.api.signup(patients)
+                                try{
+                                    var response = AuthApiInstance.api.signup(patients)
 
-                                if(response.isSuccessful){
-                                    Log.d("API_RESPONSE",response.body().toString())
+                                    if(response.isSuccessful){
+                                        Log.d("API_RESPONSE",response.body().toString())
 
-                                    if(profilePicUri!=null){
-                                        Log.d("PROFILE_PIC_URI",profilePicUri.toString())
-                                        uploadProfilePicture(context = context, imageUri = profilePicUri!!,username=username.toString().trim()){ patients->
+                                        if(profilePicUri!=null){
+                                            Log.d("PROFILE_PIC_URI",profilePicUri.toString())
+                                            uploadProfilePicture(context = context, imageUri = profilePicUri!!,username=username.toString().trim()){ patients->
 
-                                            if (patients != null) {
-                                                editor.putString(Keys.PROFILE_PIC_URL,patients.profilePicUrl)
-                                                editor.putString(Keys.USERNAME,patients.username)
-                                                editor.putString(Keys.NAME,patients.name)
-                                                editor.putString(Keys.EMAIL,patients.email)
-                                                editor.putString(Keys.PASSWORD,password)
-                                                editor.commit()
-                                                editor.apply()
-                                            }
-                                            Handler(Looper.getMainLooper()).post {
-                                                navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
-                                                    popUpTo(0){
-                                                        inclusive=true
+                                                if (patients != null) {
+                                                    editor.putString(Keys.PROFILE_PIC_URL,patients.profilePicUrl)
+                                                    editor.putString(Keys.USERNAME,patients.username)
+                                                    editor.putString(Keys.NAME,patients.name)
+                                                    editor.putString(Keys.EMAIL,patients.email)
+                                                    editor.putString(Keys.PASSWORD,password)
+                                                    editor.commit()
+                                                    editor.apply()
+                                                }
+                                                Handler(Looper.getMainLooper()).post {
+                                                    navController.navigate(Routes.PATIENT_DASHBOARD_SCREEN_ROUTE.route){
+                                                        popUpTo(0){
+                                                            inclusive=true
+                                                        }
                                                     }
-                                            }
 
 
+                                                }
                                             }
-                                        }
+                                        }else
+                                            Log.d("PROFILE_PIC_NULL","profile pic uri is null")
+
                                     }else
-                                        Log.d("PROFILE_PIC_NULL","profile pic uri is null")
+                                        Log.d("API_ERROR",response.errorBody().toString())
 
-                                }else
-                                    Log.d("API_ERROR",response.errorBody().toString())
+                                }catch (e:Exception){
+                                    e.localizedMessage?.let { Log.d("API_EXPECTION", it.toString()) }
+                                }
 
-                            }catch (e:Exception){
-                                e.localizedMessage?.let { Log.d("API_EXPECTION", it.toString()) }
+
+
                             }
+                        }else
+                            Toast.makeText(context, "Select a Profile pic first!!", Toast.LENGTH_SHORT).show()
 
 
-
-                        }
 
 
 

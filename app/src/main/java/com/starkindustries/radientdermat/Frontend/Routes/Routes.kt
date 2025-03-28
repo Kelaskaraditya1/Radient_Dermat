@@ -1,6 +1,6 @@
 package com.starkindustries.radientdermat.Frontend.Routes
 
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 
 sealed class Routes(var route:String) {
 

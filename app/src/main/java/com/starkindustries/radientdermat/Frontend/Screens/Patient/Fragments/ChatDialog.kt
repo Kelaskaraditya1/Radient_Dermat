@@ -42,7 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.rememberAsyncImagePainter
 import com.google.ai.client.generativeai.GenerativeModel
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Message
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.ui.theme.Purple40

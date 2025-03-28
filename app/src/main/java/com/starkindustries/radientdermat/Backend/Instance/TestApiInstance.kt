@@ -3,7 +3,7 @@ package com.starkindustries.radientdermat.Backend.Instance
 import com.google.gson.GsonBuilder
 import com.starkindustries.radientdermat.Backend.Api.AuthApi
 import com.starkindustries.radientdermat.Backend.Api.PatientTestApi
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

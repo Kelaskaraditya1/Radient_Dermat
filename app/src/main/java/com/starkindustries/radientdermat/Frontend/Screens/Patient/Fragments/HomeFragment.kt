@@ -92,7 +92,7 @@ import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.starkindustries.radientdermat.Backend.Instance.TestApiInstance
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.DiseaseTabCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Message
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.PatientTest

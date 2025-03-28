@@ -10,7 +10,7 @@ import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.starkindustries.radientdermat.Frontend.Keys.Keys
+import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.uriToBitmap
 
 fun getSymptoms(diseaseName:String,context:Context):String{

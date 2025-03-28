@@ -3,6 +3,7 @@ package com.starkindustries.radientdermat.Backend.Instance
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.starkindustries.radientdermat.Backend.Api.AuthApi
+import com.starkindustries.radientdermat.Backend.Api.ModelApi
 import com.starkindustries.radientdermat.Keys.Keys
 import okhttp3.Cookie
 import okhttp3.CookieJar
@@ -13,8 +14,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object AuthApiInstance {
-    val api: AuthApi by lazy {
+object ModelInstance {
+
+    val api: ModelApi by lazy{
 
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -63,11 +65,10 @@ object AuthApiInstance {
         val gson = GsonBuilder().setLenient().create()
 
         Retrofit.Builder()
-            .baseUrl(Keys.BASE_URL)
+            .baseUrl(Keys.PREDICTION_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client)
             .build()
-            .create(AuthApi::class.java)
+            .create(ModelApi::class.java)
     }
 }
-
