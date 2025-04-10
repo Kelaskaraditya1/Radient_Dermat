@@ -184,51 +184,51 @@ fun LoginScreen(navController: NavController){
 
             }) {
                 Text(text = "Submit"
-                , fontSize = 18.sp
-                , fontWeight = FontWeight.W500)
+                    , fontSize = 18.sp
+                    , fontWeight = FontWeight.W500)
             }
         }
-        , dismissButton = {
-            Button(onClick = {
-                forgotPasswordUpdatePasswordDialogState=false
+            , dismissButton = {
+                Button(onClick = {
+                    forgotPasswordUpdatePasswordDialogState=false
+                }
+                    , colors = ButtonDefaults
+                        .buttonColors(
+                            containerColor = Color.Transparent
+                        )
+                    , modifier = Modifier
+                        .border(width = 2.dp, color = Purple40, shape = CircleShape)) {
+                    Text(text = "Cancel"
+                        , fontWeight = FontWeight.W500
+                        , fontSize = 18.sp
+                        , color = Purple40)
+                }
             }
-            , colors = ButtonDefaults
-                    .buttonColors(
-                        containerColor = Color.Transparent
-                    )
-            , modifier = Modifier
-                    .border(width = 2.dp, color = Purple40, shape = CircleShape)) {
-                Text(text = "Cancel"
-                , fontWeight = FontWeight.W500
-                , fontSize = 18.sp
-                , color = Purple40)
+            , title = {
+                Text(text = "Update Password")
             }
-            }
-        , title = {
-            Text(text = "Update Password")
-            }
-        , text = {
-            Column {
-                Text(text = "Use a Strong, Unique Password – Create a password with at least 8-12 characters, including uppercase and lowercase letters, numbers, and special characters. Avoid common words or easily guessable information."
-                    , fontSize = 17.sp
-                , fontWeight = FontWeight.W500
-                , color = Color.Black)
+            , text = {
+                Column {
+                    Text(text = "Use a Strong, Unique Password – Create a password with at least 8-12 characters, including uppercase and lowercase letters, numbers, and special characters. Avoid common words or easily guessable information."
+                        , fontSize = 17.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Color.Black)
 
-                Spacer(modifier = Modifier
-                    .height(20.dp))
+                    Spacer(modifier = Modifier
+                        .height(20.dp))
 
-                TextField(value = forgotPasswordPassword
-                    , onValueChange ={
-                        forgotPasswordPassword=it
-                    }
-                , label = {
-                    Text(text = "Password"
-                    , fontWeight = FontWeight.W500
-                    , fontSize = 17.sp
-                    , color = Color.Black
-                    )
-                    })
-            }
+                    TextField(value = forgotPasswordPassword
+                        , onValueChange ={
+                            forgotPasswordPassword=it
+                        }
+                        , label = {
+                            Text(text = "Password"
+                                , fontWeight = FontWeight.W500
+                                , fontSize = 17.sp
+                                , color = Color.Black
+                            )
+                        })
+                }
             })
     }
 
@@ -284,16 +284,16 @@ fun LoginScreen(navController: NavController){
                     emailSent=false
                     forgotPasswordDialogState=false
                 }
-                , colors = ButtonDefaults
+                    , colors = ButtonDefaults
                         .buttonColors(
                             containerColor = Color.Transparent
                         )
-                , modifier = Modifier
+                    , modifier = Modifier
                         .border(width = 2.dp, color = Purple40, shape = CircleShape)) {
                     Text(text = "Cancel"
-                    , fontSize = 18.sp
-                    , fontWeight = FontWeight.W500
-                    , color = Purple40)
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500
+                        , color = Purple40)
                 }
             }
             , title = {
@@ -303,8 +303,8 @@ fun LoginScreen(navController: NavController){
                 Column {
 
                     Text(text = "Enter the valid email which has been used while registering , an otp will be sent to the email for account verification.Enter the correct otp for account verification."
-                    , fontSize = 18.sp
-                    , fontWeight = FontWeight.W500)
+                        , fontSize = 18.sp
+                        , fontWeight = FontWeight.W500)
 
                     Spacer(modifier = Modifier
                         .height(15.dp))
@@ -313,11 +313,11 @@ fun LoginScreen(navController: NavController){
                         , onValueChange ={
                             forgotPasswordEmail=it
                         }
-                    , label = {
-                        Text(text = "Email"
-                        , fontSize = 18.sp
-                        , fontWeight = FontWeight.W500
-                        , color = Color.Black)
+                        , label = {
+                            Text(text = "Email"
+                                , fontSize = 18.sp
+                                , fontWeight = FontWeight.W500
+                                , color = Color.Black)
                         })
 
                     Spacer(modifier = Modifier
@@ -325,7 +325,7 @@ fun LoginScreen(navController: NavController){
 
                     Box(modifier =Modifier
                         .fillMaxWidth()
-                    , contentAlignment = Alignment.Center){
+                        , contentAlignment = Alignment.Center){
                         Button(onClick = {
                             if (forgotPasswordEmail.isNotEmpty()) {
                                 try {
@@ -350,7 +350,7 @@ fun LoginScreen(navController: NavController){
                             }
 
                         }
-                        , colors = ButtonDefaults
+                            , colors = ButtonDefaults
                                 .buttonColors(
                                     containerColor = Purple40
                                 )) {
@@ -386,7 +386,7 @@ fun LoginScreen(navController: NavController){
 
     Column(horizontalAlignment = Alignment.CenterHorizontally
         , verticalArrangement = Arrangement.Center
-    , modifier = Modifier
+        , modifier = Modifier
             .fillMaxSize()) {
 
 
@@ -394,7 +394,7 @@ fun LoginScreen(navController: NavController){
             .height(40.dp))
 
         AuthenticationLogoTextCompose(logo = painterResource(id = R.drawable.login_logo), text = "Login"
-        , modifier = Modifier)
+            , modifier = Modifier)
 
         Spacer(modifier = Modifier
             .height(10.dp))
@@ -434,7 +434,7 @@ fun LoginScreen(navController: NavController){
 
 
             Column(horizontalAlignment = Alignment.Start
-            , modifier = Modifier
+                , modifier = Modifier
                     .fillMaxSize()
                     .padding(start = 15.dp, end = 15.dp)) {
 
@@ -446,8 +446,8 @@ fun LoginScreen(navController: NavController){
                         username=it
                         isUsernameValid=it.isNotEmpty()
                     }
-                , shape = CircleShape
-                , label = {
+                    , shape = CircleShape
+                    , label = {
                         if(isUsernameValid){
                             Text(text = "Username"
                                 , fontSize = 18.sp
@@ -461,9 +461,9 @@ fun LoginScreen(navController: NavController){
                                 , color = Color.Red
                             )
                         }
-                }
+                    }
                     , textStyle = TextStyle(fontSize = 18.sp)
-                , modifier = Modifier
+                    , modifier = Modifier
                         .fillMaxWidth()
                     , colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.White
@@ -479,7 +479,7 @@ fun LoginScreen(navController: NavController){
                 TextField(
                     value = password,
                     onValueChange = { password = it
-                                    isPasswordValid = passwordPattern.matches(it)},
+                        isPasswordValid = passwordPattern.matches(it)},
                     shape = CircleShape,
                     label = {
                         if(!isPasswordValid){
@@ -508,7 +508,7 @@ fun LoginScreen(navController: NavController){
                         }
                     }
                     , textStyle = TextStyle(fontSize = 18.sp)
-                , modifier = Modifier
+                    , modifier = Modifier
                         .fillMaxWidth(  )
                     , colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.White
@@ -521,21 +521,21 @@ fun LoginScreen(navController: NavController){
                 Button(onClick = {
 
                 }
-                , modifier = Modifier
-                        .padding(top = 10.dp)
-                , colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent
-                    , contentColor = Color.White
-                )) {
-                    Text(text = "forgot Password"
-                    , fontSize = 16.sp
                     , modifier = Modifier
+                        .padding(top = 10.dp)
+                    , colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                        , contentColor = Color.White
+                    )) {
+                    Text(text = "forgot Password"
+                        , fontSize = 16.sp
+                        , modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
                                 forgotPasswordDialogState = !forgotPasswordDialogState
                             }
-                    , textAlign = TextAlign.End
-                    , textDecoration = TextDecoration.Underline)
+                        , textAlign = TextAlign.End
+                        , textDecoration = TextDecoration.Underline)
                 }
 
                 Spacer(modifier = Modifier
@@ -543,7 +543,7 @@ fun LoginScreen(navController: NavController){
 
                 Box(modifier = Modifier
                     .fillMaxWidth()
-                , contentAlignment = Alignment.Center) {
+                    , contentAlignment = Alignment.Center) {
                     Button(onClick = {
 
                         var loginRequest = LoginRequest(
@@ -602,9 +602,9 @@ fun LoginScreen(navController: NavController){
 
                     }
                         , shape = CircleShape
-                    , colors = ButtonDefaults.buttonColors(
-                        containerColor = BlueBackground
-                    )) {
+                        , colors = ButtonDefaults.buttonColors(
+                            containerColor = BlueBackground
+                        )) {
                         Text(text = "Login"
                             , fontSize = 18.sp
                             , fontWeight = FontWeight.SemiBold
@@ -617,7 +617,7 @@ fun LoginScreen(navController: NavController){
 
 
                 Row(horizontalArrangement = Arrangement.SpaceEvenly
-                , verticalAlignment = Alignment.CenterVertically) {
+                    , verticalAlignment = Alignment.CenterVertically) {
 
                     HorizontalDivider(
                         modifier = Modifier
@@ -628,12 +628,12 @@ fun LoginScreen(navController: NavController){
                     )
 
                     Text(text = "Or"
-                    , fontSize = 18.sp
-                    , modifier = Modifier
+                        , fontSize = 18.sp
+                        , modifier = Modifier
                             .weight(0.2f)
-                    , textAlign = TextAlign.Center
-                    , color = Color.White
-                    , fontWeight = FontWeight.W400)
+                        , textAlign = TextAlign.Center
+                        , color = Color.White
+                        , fontWeight = FontWeight.W400)
 
                     HorizontalDivider(
                         modifier = Modifier
@@ -649,12 +649,12 @@ fun LoginScreen(navController: NavController){
                     .height(30.dp))
 
                 Row(horizontalArrangement = Arrangement.Center
-                , modifier = Modifier
+                    , modifier = Modifier
                         .fillMaxWidth()) {
 
                     Image(painter = painterResource(id = R.drawable.google)
                         , contentDescription = ""
-                    , modifier = Modifier
+                        , modifier = Modifier
                             .size(40.dp))
 
                     Spacer(modifier = Modifier
@@ -664,7 +664,7 @@ fun LoginScreen(navController: NavController){
                         , contentDescription = ""
                         , modifier = Modifier
                             .size(40.dp)
-                    , colorFilter = ColorFilter.tint(Color.White))
+                        , colorFilter = ColorFilter.tint(Color.White))
                 }
 
                 Spacer(modifier = Modifier
@@ -684,7 +684,7 @@ fun LoginScreen(navController: NavController){
 
 
 
- }
+}
 
 
 

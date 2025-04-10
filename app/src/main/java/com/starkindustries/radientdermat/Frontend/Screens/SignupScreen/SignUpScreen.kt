@@ -505,7 +505,7 @@ fun SignUpScreen(navController: NavController){
                 Spacer(modifier = Modifier
                     .height(80.dp))
 
-                    SwitchScreenCompose(text1 = "Already have an account,", text2 = "login", navController = navController, route = Routes.LOGIN_SCREEN_ROUTE.route)
+                    SwitchScreenCompose(text1 = "Already have an account,", text2 = " Login", navController = navController, route = Routes.LOGIN_SCREEN_ROUTE.route)
 
 
             }

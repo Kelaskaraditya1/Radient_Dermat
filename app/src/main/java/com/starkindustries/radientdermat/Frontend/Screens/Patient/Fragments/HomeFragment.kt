@@ -591,6 +591,9 @@ fun HomeFragment(){
             text = {
                ChatScreen()
             }
+            , title = {
+                Text(text="Chat-Bot 🤖")
+            }
         )
     }
 

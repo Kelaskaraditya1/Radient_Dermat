@@ -102,11 +102,11 @@ fun SwitchScreenCompose(text1:String,text2:String,navController: NavController,r
         , horizontalArrangement = Arrangement.Center
         , verticalAlignment = Alignment.CenterVertically) {
 
-        Text(text = "Don't have an account,"
+        Text(text = text1
             , fontSize = 18.sp
             , fontWeight = FontWeight.W500
             , color = Color.White)
-        Text(text = " Signup"
+        Text(text = text2
             , fontSize = 18.sp
             , fontWeight = FontWeight.W700
             , color = BlueBackground

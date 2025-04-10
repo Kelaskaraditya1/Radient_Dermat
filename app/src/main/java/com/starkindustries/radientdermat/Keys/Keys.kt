@@ -17,7 +17,7 @@ class Keys {
         const val CAPTURE_FRAGMENT="CAPTURE_FRAGMENT"
         const val PROFILE_FRAGMENT="PROFILE_FRAGMENT"
         const val NO_INTERNET_SCREEN="NO_INTERNET_SCREEN"
-        const val BASE_URL="http://192.168.0.102:8080/"
+        const val BASE_URL="http://192.168.0.104:8080/"
         const val JWT_TOKEN="JWT_TOKEN"
         const val MODEL_NAME="gemini-1.5-pro"
         const val API_KEY="AIzaSyCs_O4-ku2iBKCDASwdGFmvEugTWQTPgAU"
