@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.starkindustries.radientdermat.R
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -89,8 +89,8 @@ import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.AuthenticationLogoTextCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Compose.SwitchScreenCompose
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.LoginRequest
-import com.starkindustries.radientdermat.ui.theme.BlueBackground
-import com.starkindustries.radientdermat.ui.theme.Purple40
+import com.starkindustries.radientdermat.Frontend.theme.BlueBackground
+import com.starkindustries.radientdermat.Frontend.theme.Purple40
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -201,7 +201,8 @@ fun LoginScreen(navController: NavController){
                     Text(text = "Cancel"
                         , fontWeight = FontWeight.W500
                         , fontSize = 18.sp
-                        , color = Purple40)
+                        , color = Purple40
+                    )
                 }
             }
             , title = {
@@ -293,7 +294,8 @@ fun LoginScreen(navController: NavController){
                     Text(text = "Cancel"
                         , fontSize = 18.sp
                         , fontWeight = FontWeight.W500
-                        , color = Purple40)
+                        , color = Purple40
+                    )
                 }
             }
             , title = {
@@ -670,7 +672,7 @@ fun LoginScreen(navController: NavController){
                 Spacer(modifier = Modifier
                     .height(50.dp))
 
-                SwitchScreenCompose(text1 = "Don't have an account,", text2 = "signup", navController = navController, route = Routes.SIGNUP_SCREEN_ROUTE.route)
+                SwitchScreenCompose(text1 = "Don't have an account,", text2 = "Signup", navController = navController, route = Routes.SIGNUP_SCREEN_ROUTE.route)
 
 
             }

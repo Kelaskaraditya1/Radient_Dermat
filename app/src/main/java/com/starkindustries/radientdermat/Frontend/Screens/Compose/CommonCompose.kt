@@ -68,9 +68,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.R
-import com.starkindustries.radientdermat.ui.theme.BlueBackground
-import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.BlueBackground
+import com.starkindustries.radientdermat.Frontend.theme.cardBlueBackground
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
 
 @Composable
 fun AuthenticationLogoTextCompose(logo:Painter,text:String,modifier: Modifier){
@@ -102,7 +102,7 @@ fun SwitchScreenCompose(text1:String,text2:String,navController: NavController,r
         , horizontalArrangement = Arrangement.Center
         , verticalAlignment = Alignment.CenterVertically) {
 
-        Text(text = text1
+        Text(text = text1+" "
             , fontSize = 18.sp
             , fontWeight = FontWeight.W500
             , color = Color.White)

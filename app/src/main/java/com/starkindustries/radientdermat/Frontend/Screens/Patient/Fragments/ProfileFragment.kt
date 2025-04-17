@@ -85,17 +85,17 @@ import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.UpdatedPa
 import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.getFileFromUri
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
-import com.starkindustries.radientdermat.ui.theme.BlueBackground
-import com.starkindustries.radientdermat.ui.theme.Purple40
-import com.starkindustries.radientdermat.ui.theme.Purple80
-import com.starkindustries.radientdermat.ui.theme.blueGradientBrush
-import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
-import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
-import com.starkindustries.radientdermat.ui.theme.multiShadeYellowGradient
-import com.starkindustries.radientdermat.ui.theme.orangeGradient
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
-import com.starkindustries.radientdermat.ui.theme.redGradientBrush
-import com.starkindustries.radientdermat.ui.theme.whiteBrush
+import com.starkindustries.radientdermat.Frontend.theme.BlueBackground
+import com.starkindustries.radientdermat.Frontend.theme.Purple40
+import com.starkindustries.radientdermat.Frontend.theme.Purple80
+import com.starkindustries.radientdermat.Frontend.theme.blueGradientBrush
+import com.starkindustries.radientdermat.Frontend.theme.brightGreenGradient
+import com.starkindustries.radientdermat.Frontend.theme.cardBlueBackground
+import com.starkindustries.radientdermat.Frontend.theme.multiShadeYellowGradient
+import com.starkindustries.radientdermat.Frontend.theme.orangeGradient
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.redGradientBrush
+import com.starkindustries.radientdermat.Frontend.theme.whiteBrush
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -383,7 +383,8 @@ fun ProfileFragment(navController:NavController,pagerState: PagerState){
                 Text(text = "Cancel"
                 , fontSize = 17.sp
                 , fontWeight = FontWeight.W500
-                , color = Purple40)
+                , color = Purple40
+                )
             }
             }
         , title = {

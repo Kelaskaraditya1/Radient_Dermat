@@ -31,7 +31,7 @@ import com.starkindustries.radientdermat.Frontend.Routes.Routes
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
 import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.SignUpScreen
 import com.starkindustries.radientdermat.R
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
 import kotlinx.coroutines.delay
 
 @Composable

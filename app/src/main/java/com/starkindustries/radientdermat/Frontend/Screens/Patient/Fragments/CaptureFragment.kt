@@ -59,8 +59,8 @@ import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Patient
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.PatientTest
 import com.starkindustries.radientdermat.R
-import com.starkindustries.radientdermat.ui.theme.Purple40
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.Purple40
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
 import kotlinx.coroutines.launch
 
 @Composable

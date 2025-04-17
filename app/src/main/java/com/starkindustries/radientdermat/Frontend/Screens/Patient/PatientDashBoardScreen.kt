@@ -55,7 +55,7 @@ import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.Capt
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.HomeFragment
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Fragments.ProfileFragment
 import com.starkindustries.radientdermat.Utility.Utility
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

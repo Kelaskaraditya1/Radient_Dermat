@@ -100,11 +100,11 @@ import com.starkindustries.radientdermat.Frontend.Screens.SignupScreen.getFileFr
 import com.starkindustries.radientdermat.R
 import com.starkindustries.radientdermat.Utility.Utility
 import com.starkindustries.radientdermat.Utility.getSymptoms
-import com.starkindustries.radientdermat.ui.theme.Purple40
-import com.starkindustries.radientdermat.ui.theme.brightGreenGradient
-import com.starkindustries.radientdermat.ui.theme.cardBlueBackground
-import com.starkindustries.radientdermat.ui.theme.orangeGradient
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.Purple40
+import com.starkindustries.radientdermat.Frontend.theme.brightGreenGradient
+import com.starkindustries.radientdermat.Frontend.theme.cardBlueBackground
+import com.starkindustries.radientdermat.Frontend.theme.orangeGradient
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

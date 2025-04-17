@@ -1,4 +1,4 @@
-package com.starkindustries.radientdermat.ui.theme
+package com.starkindustries.radientdermat.Frontend.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

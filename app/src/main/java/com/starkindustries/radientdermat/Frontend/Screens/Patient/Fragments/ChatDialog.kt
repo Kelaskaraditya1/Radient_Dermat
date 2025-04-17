@@ -45,8 +45,8 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.starkindustries.radientdermat.Keys.Keys
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.Data.Message
 import com.starkindustries.radientdermat.R
-import com.starkindustries.radientdermat.ui.theme.Purple40
-import com.starkindustries.radientdermat.ui.theme.purpleGradient
+import com.starkindustries.radientdermat.Frontend.theme.Purple40
+import com.starkindustries.radientdermat.Frontend.theme.purpleGradient
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

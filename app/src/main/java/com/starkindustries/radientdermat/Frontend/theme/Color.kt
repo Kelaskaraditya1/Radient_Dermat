@@ -1,4 +1,4 @@
-package com.starkindustries.radientdermat.ui.theme
+package com.starkindustries.radientdermat.Frontend.theme
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color

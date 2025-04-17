@@ -18,7 +18,7 @@ import com.starkindustries.radientdermat.Frontend.Navigation.Navigation
 import com.starkindustries.radientdermat.Frontend.Screens.LoginScreen.LoginScreen
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.DiseasePredictionTest
 import com.starkindustries.radientdermat.Frontend.Screens.Patient.ModelPrediction
-import com.starkindustries.radientdermat.ui.theme.RadientDermatTheme
+import com.starkindustries.radientdermat.Frontend.theme.RadientDermatTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
